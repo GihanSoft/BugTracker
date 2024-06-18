@@ -8,7 +8,9 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/test/" />
-  <Folder Name="/src/" />
+  <Folder Name="/src/">
+    <Project Path="src\BugTracker.Main\BugTracker.Main.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/.github/workflows/">
     <File Path=".github\workflows\liara.yml" />
   </Folder>
