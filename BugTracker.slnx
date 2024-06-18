@@ -4,6 +4,7 @@
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
     <File Path=".gitmodules" />
+    <File Path="liara.json" />
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
