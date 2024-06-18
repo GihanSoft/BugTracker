@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/[root]/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path=".gitmodules" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/test/" />
+  <Folder Name="/src/" />
+  <Folder Name="/.github/workflows/">
+    <File Path=".github\workflows\liara.yml" />
+  </Folder>
+  <Folder Name="/.github/" />
+</Solution>
