@@ -10,7 +10,10 @@
   </Folder>
   <Folder Name="/test/" />
   <Folder Name="/src/">
-    <Project Path="src\BugTracker.Main\BugTracker.Main.csproj" Type="Classic C#" />
+    <Project Path="src\BugTracker.Main\BugTracker.Main.csproj" />
+  </Folder>
+  <Folder Name="/lib/">
+    <Project Path="lib\GihanSoft.Framework\src\GihanSoft.Framework.Web\GihanSoft.Framework.Web.csproj" />
   </Folder>
   <Folder Name="/.github/workflows/">
     <File Path=".github\workflows\liara.yml" />

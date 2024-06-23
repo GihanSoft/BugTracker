@@ -1,0 +1,3 @@
+[submodule "GihanSoft.Framework"]
+	path = lib/GihanSoft.Framework
+	url = https://github.com/GihanSoft/GihanSoft.Framework
