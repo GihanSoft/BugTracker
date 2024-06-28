@@ -1,8 +1,10 @@
+using BugTracker.Main.Components;
+
 using GihanSoft.Framework.Web.Bootstrap.ConditionalPipelineUse;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddExceptionHandler(opt => opt.ExceptionHandlingPath = "/error");
+builder.Services.AddRazorComponents();
 
 var app = builder.Build();
 
@@ -10,12 +12,14 @@ var isDevelopment = app.Environment.IsDevelopment();
 
 _ = app
     .If(isDevelopment, a => a.UseDeveloperExceptionPage())
-    .If(!isDevelopment, a => a.UseExceptionHandler())
+    .If(!isDevelopment, a => a.UseExceptionHandler("/500"))
     .If(!isDevelopment, a => a.UseHsts())
     .UseHttpsRedirection()
+    .UseStatusCodePagesWithReExecute("/{0}")
+    .UseStaticFiles()
+    .UseAntiforgery()
     ;
 
-app.MapGet("/", () => "Hello World!");
-app.MapGet("/error", () => "There is an error!");
+app.MapRazorComponents<App>();
 
 app.Run();

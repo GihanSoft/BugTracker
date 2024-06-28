@@ -1,0 +1,13 @@
+﻿.navbar {
+  background-color: royalblue;
+  min-height: 4rem;
+  display: flex;
+}
+
+::deep .navbar-brand {
+  flex-grow: 0;
+  text-decoration: none;
+  color: white;
+  align-content: center;
+  padding-inline: 1rem;
+}
