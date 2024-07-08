@@ -1,0 +1,89 @@
+﻿@using BugTracker.Main.Features.Identity
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+
+@page "/Identity/Users/Create"
+
+@inject UserManager<AppUser> UserManager
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize("sarvar")]
+
+<div class="flat-card">
+    <h3>SignUp</h3>
+
+    <EditForm Enhance FormName="SignIn" Model="InputModel" OnValidSubmit="OnValidSubmit" class="vertical-mini-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label>
+                نام کاربری
+                <InputText @bind-Value="InputModel!.UserName" required />
+            </label>
+        </div>
+        <div>
+            <label>
+                گذرواژه
+                <InputText type="password" @bind-Value="InputModel.Password" required />
+            </label>
+        </div>
+        <div>
+            <label>
+                تایید گذرواژه
+                <InputText type="password" @bind-Value="InputModel.PasswordConfirmation" required />
+            </label>
+        </div>
+        <div>
+            <label>
+                رایانامه
+                <InputText @bind-Value="InputModel.Email" type="email" autocomplete="email" />
+            </label>
+        </div>
+        <button type="submit" class="btn-primary">ذخیره</button>
+    </EditForm>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private SignInInputModel? InputModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InputModel ??= new();
+    }
+
+    private async Task OnValidSubmit(EditContext editContext)
+    {
+        AppUser user = new()
+            {
+                UserName = InputModel!.UserName,
+                Email = InputModel.Email,
+            };
+
+        var result = await UserManager.CreateAsync(user, InputModel.Password!);
+
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo("/Identity/Users");
+            return;
+        }
+
+        ValidationMessageStore validationMessageStore = new(editContext);
+        validationMessageStore.Add(() => InputModel.UserName!, result.Errors.Select(x => $"{x.Code} : {x.Description}"));
+        editContext.NotifyValidationStateChanged();
+    }
+
+    class SignInInputModel()
+    {
+        [Required]
+        public string? UserName { get; set; }
+        [Required]
+        public string? Password { get; set; }
+        [Required, Compare(nameof(Password))]
+        public string? PasswordConfirmation { get; set; }
+        [Required, EmailAddress]
+        public string? Email { get; set; }
+    }
+}

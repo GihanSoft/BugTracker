@@ -1,0 +1,68 @@
+﻿@page "/Identity/Info"
+
+@using System.Security.Claims
+@using BugTracker.Main.Features.Identity
+
+@attribute [Authorize]
+
+@inject UserManager<AppUser> UserManager
+
+@if (_user is not null)
+{
+    <div>
+        @if (@_user.Avatar is not null)
+        {
+            <div>
+                <img src="@_user.Avatar" alt="user avatar" />
+            </div>
+        }
+        <div>
+            <span>نام نمایشی:</span> <span>@_user.DisplayName</span>
+        </div>
+        <div>
+            <span>نام کاربری:</span> <span>@_user.UserName</span>
+        </div>
+        <div>
+            <span>رایانامه:</span> <span>@_user.Email</span>
+            <span>@(_user.EmailConfirmed ? "✔" : "❌")</span>
+        </div>
+        <div>
+            <span>موبایل:</span> <span>@_user.PhoneNumber</span>
+            <span>@(_user.PhoneNumberConfirmed ? "✔" : "❌")</span>
+        </div>
+    </div>
+}
+
+<table>
+    <thead>
+        <tr>
+            <th>type</th>
+            <th>value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in _claims)
+        {
+            <tr>
+                <td>@item.Type</td>
+                <td>@item.Value</td>
+            </tr>
+        }
+    </tbody>
+    <caption>claims</caption>
+</table>
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    private IEnumerable<Claim> _claims = [];
+    private AppUser? _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationState!;
+        _user = await UserManager.GetUserAsync(authenticationState.User);
+        _claims = authenticationState.User.Claims;
+    }
+}

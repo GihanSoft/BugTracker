@@ -1,5 +1,35 @@
-﻿<header>
+﻿@using BugTracker.Main.Features.Identity
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<AppUser> SignInManager
+@inject NavigationManager NavigationManager
+
+<header>
     <nav class="navbar">
         <NavLink class="navbar-brand" Match="NavLinkMatch.All" href="/">باگ بان</NavLink>
+
+        <AuthorizeView>
+            <Authorized>
+                <form @formname="logout" @onsubmit="OnLogoutSubmit" method="post" id="navbar-logout-form">
+                    <AntiforgeryToken />
+                    <button type="submit">logout</button>
+                </form>
+            </Authorized>
+            <NotAuthorized>
+                <NavLink href="@SignInUrl" class="navbar-item">SignIn</NavLink>
+            </NotAuthorized>
+        </AuthorizeView>
     </nav>
 </header>
+
+@code {
+    private string CurrentPath => NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+    private string? ReturnUrl => CurrentPath is "" or "/" ? null : $"?ReturnUrl={CurrentPath}";
+    private string SignInUrl => "Identity/SignIn" + ReturnUrl;
+
+    async Task OnLogoutSubmit()
+    {
+        await SignInManager.SignOutAsync();
+        NavigationManager.Refresh();
+    }
+}

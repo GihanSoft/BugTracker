@@ -2,6 +2,7 @@
   width: 100%;
   max-width: 1000px;
   justify-self: center;
+  display: grid;
 }
 
 #blazor-error-ui {

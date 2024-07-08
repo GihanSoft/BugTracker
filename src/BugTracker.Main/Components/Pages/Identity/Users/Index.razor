@@ -1,0 +1,51 @@
+﻿@using BugTracker.Main.Features.Identity
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.EntityFrameworkCore
+
+@page "/Identity/Users"
+
+@inject UserManager<AppUser> UserManager
+
+@attribute [Authorize("sarvar")]
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>UserName</th>
+                <th>Email</th>
+                <th></th>
+                <th>PhoneNumber</th>
+                <th></th>
+                <th>DisplayName</th>
+                <th>Avatar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _users)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.UserName</td>
+                    <td>@item.Email</td>
+                    <td>@(item.EmailConfirmed ? "✔" : "❌")</td>
+                    <td>@item.PhoneNumber</td>
+                    <td>@(item.PhoneNumberConfirmed ? "✔" : "❌")</td>
+                    <td>@item.DisplayName</td>
+                    <td><img src="@item.Avatar" alt="user avatar" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code{
+    private IReadOnlyList<AppUser> _users = [];
+    protected override async Task OnInitializedAsync()
+    {
+        var users = await UserManager.Users.ToListAsync();
+        _users = users.AsReadOnly();
+    }
+}

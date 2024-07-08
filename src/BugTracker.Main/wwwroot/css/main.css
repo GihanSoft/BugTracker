@@ -17,11 +17,69 @@ body {
   margin: 0;
 }
 
-html, body{
+html, body, button, input {
   font-family: Vazirmatn, sans-serif
 }
 
 body {
   display: grid;
   grid-template-rows: auto 1fr auto;
+}
+
+.flat-card {
+  display: grid;
+  gap: 1rem;
+  align-self: center;
+  justify-self: center;
+  padding: 1.5rem;
+  border: 2px solid #38F8;
+  border-radius: 0.5rem;
+}
+
+  .flat-card > * {
+    margin: 0;
+  }
+
+.vertical-mini-form {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: end;
+}
+
+  .vertical-mini-form button[type=submit] {
+    justify-self: stretch;
+    padding-block: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+.btn-primary {
+  border: none;
+  outline: solid royalblue 1px;
+  border-radius: 2px;
+}
+
+  .btn-primary:hover {
+    outline-width: 2px;
+  }
+
+input:not([type="file" i], [type="image" i], [type="checkbox" i], [type="radio" i], [type="password" i]) {
+  unicode-bidi: plaintext;
+}
+
+input:is([type=password], [type=email]) {
+  direction: ltr;
+}
+
+input:not([type="file" i], [type="image" i], [type="checkbox" i], [type="radio" i]):not(:focus-visible) {
+  outline-color: royalblue;
+  outline-style: auto;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td, th {
+  border: 1.5px solid royalblue;
 }

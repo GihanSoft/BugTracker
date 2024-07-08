@@ -1,0 +1,107 @@
+﻿@using BugTracker.Main.Features.Identity
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+
+@page "/Identity/SignIn"
+
+@inject SignInManager<AppUser> SignInManager
+@inject NavigationManager NavigationManager
+
+<div class="flat-card">
+    <EditForm Enhance FormName="SignIn" Model="InputModel" OnValidSubmit="OnValidSubmit" class="vertical-mini-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <label>
+                نام کاربری
+                <InputText @bind-Value="InputModel!.UserName" required />
+            </label>
+        </div>
+        <div>
+            <label>
+                گذرواژه
+                <InputText @bind-Value="InputModel!.Password" type="password" required />
+            </label>
+        </div>
+        <div>
+            <label>
+                مرا به خاطر بسپار
+                <InputCheckbox @bind-Value="InputModel!.Remember" />
+            </label>
+        </div>
+        <button type="submit" class="btn-primary">ورود</button>
+    </EditForm>
+    <div>
+        <NavLink href="/Identity/SignUp">ثبت‌نام</NavLink>
+        <span>|</span>
+        <NavLink href="/Identity/ForgotPassword">فراموشی گذرواژه</NavLink>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private SignInInputModel? InputModel { get; set; }
+
+    [SupplyParameterFromQuery(Name = "ReturnUrl")]
+    public string? ReturnUrl { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationState is not null &&
+            await AuthenticationState is AuthenticationState authenticationState
+            && authenticationState.User.Identity?.IsAuthenticated == true)
+        {
+            NavigationManager.NavigateTo("/Identity/Info", false, true);
+        }
+
+        InputModel ??= new();
+    }
+
+    private async Task OnValidSubmit(EditContext editContext)
+    {
+        var result = await SignInManager.PasswordSignInAsync(
+            InputModel!.UserName!,
+            InputModel.Password!,
+            InputModel.Remember,
+            true);
+
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo(ReturnUrl ?? "/");
+        }
+
+        if (result.RequiresTwoFactor)
+        {
+            NavigationManager.NavigateTo("/Identity/2FA");
+        }
+
+        ValidationMessageStore validationMessageStore = new(editContext);
+
+        switch (result)
+        {
+            case { IsLockedOut: true }:
+                validationMessageStore.Add(() => InputModel.UserName!, "locked out");
+                break;
+            case { IsNotAllowed: true }:
+                validationMessageStore.Add(() => InputModel.UserName!, "not allowed to sign-in");
+                break;
+            default:
+                validationMessageStore.Add(() => InputModel.Password!, "password mismatch");
+                break;
+        }
+
+        editContext.NotifyValidationStateChanged();
+    }
+
+    class SignInInputModel()
+    {
+        [Required]
+        public string? UserName { get; set; }
+        [Required]
+        public string? Password { get; set; }
+        public bool Remember { get; set; }
+    }
+}
