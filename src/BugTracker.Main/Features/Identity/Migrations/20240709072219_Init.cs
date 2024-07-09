@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BugTracker.Main.Features.Identity.Data.Migrations
+namespace BugTracker.Main.Features.Identity.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration
@@ -21,8 +21,8 @@ namespace BugTracker.Main.Features.Identity.Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
-                    display_name = table.Column<string>(type: "text", nullable: true),
-                    avatar = table.Column<string>(type: "text", nullable: true),
+                    display_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    avatar = table.Column<string>(type: "character varying(10485760)", maxLength: 10485760, nullable: true),
                     user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     normalized_user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),

@@ -3,20 +3,17 @@ using System;
 using BugTracker.Main.Features.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BugTracker.Main.Features.Identity.Data.Migrations
+namespace BugTracker.Main.Features.Identity.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20240705111028_Init")]
-    partial class Init
+    partial class IdentityDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +33,8 @@ namespace BugTracker.Main.Features.Identity.Data.Migrations
                         .HasColumnName("access_failed_count");
 
                     b.Property<string>("Avatar")
-                        .HasColumnType("text")
+                        .HasMaxLength(10485760)
+                        .HasColumnType("character varying(10485760)")
                         .HasColumnName("avatar");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -45,7 +43,8 @@ namespace BugTracker.Main.Features.Identity.Data.Migrations
                         .HasColumnName("concurrency_stamp");
 
                     b.Property<string>("DisplayName")
-                        .HasColumnType("text")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("display_name");
 
                     b.Property<string>("Email")
