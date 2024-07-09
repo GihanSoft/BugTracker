@@ -99,7 +99,7 @@ internal static class IdentityServices
 
                 options.Password.RequiredLength = 8;
 
-                options.SignIn.RequireConfirmedAccount = true;
+                options.SignIn.RequireConfirmedAccount = false; //TODO: change after implementing Email sender
 
                 options.Stores.ProtectPersonalData = false;
 
