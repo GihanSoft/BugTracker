@@ -5,6 +5,7 @@
     <File Path=".gitignore" />
     <File Path=".gitmodules" />
     <File Path="liara.json" />
+    <File Path="liara_pre_start.sh" />
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
