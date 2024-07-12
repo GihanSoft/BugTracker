@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BugTracker.Main.Features.Identity.Migrations
+namespace BugTracker.Main.Features.Identity.Data.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
     [Migration("20240709072219_Init")]
