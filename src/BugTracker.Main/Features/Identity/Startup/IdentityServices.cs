@@ -1,4 +1,5 @@
 ﻿using BugTracker.Main.Features.Identity.Data;
+
 using GihanSoft.Framework.Web.Bootstrap.Initialization;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -6,9 +7,6 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Storage;
-
-using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace BugTracker.Main.Features.Identity.Startup;
 
