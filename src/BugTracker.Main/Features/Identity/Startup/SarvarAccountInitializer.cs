@@ -33,7 +33,7 @@ internal class SarvarAccountInitializer(IOptions<SarvarOptions> _sarvarOptions, 
         }
         else
         {
-            if (_userManager.PasswordHasher.HashPassword(sarvar, _sarvarOptions.Password) != sarvar.PasswordHash)
+            if (await _userManager.CheckPasswordAsync(sarvar, _sarvarOptions.Password) is false)
             {
                 await _userManager.RemovePasswordAsync(sarvar);
                 await _userManager.AddPasswordAsync(sarvar, _sarvarOptions.Password);
