@@ -1,4 +1,5 @@
 using BugTracker.Main.Components;
+using BugTracker.Main.Features.Backlog.Startup;
 using BugTracker.Main.Features.Identity.Startup;
 
 using GihanSoft.Framework.Web.Bootstrap.ConditionalPipelineUse;
@@ -10,6 +11,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(builder.Configuration.GetSec
 
 builder.Services.AddRazorComponents();
 builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddBacklogService();
 
 var app = builder.Build();
 

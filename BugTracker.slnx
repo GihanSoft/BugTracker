@@ -13,6 +13,7 @@
     <Project Path="src\BugTracker.Main\BugTracker.Main.csproj" />
   </Folder>
   <Folder Name="/lib/">
+    <Project Path="lib\GihanSoft.Framework\src\GihanSoft.Framework.Core\GihanSoft.Framework.Core.csproj" />
     <Project Path="lib\GihanSoft.Framework\src\GihanSoft.Framework.Web\GihanSoft.Framework.Web.csproj" />
   </Folder>
   <Folder Name="/.github/workflows/">

@@ -1,0 +1,62 @@
+﻿@page "/Backlog/Projects/Create"
+
+@using BugTracker.Main.Features.Backlog
+@using BugTracker.Main.Features.Backlog.Data
+
+@inject NavigationManager NavigationManager
+@inject BacklogDbContext Db
+
+<PageTitle>ساختن پروژه</PageTitle>
+
+<h3>ساختن پروژه جدید</h3>
+
+<EditForm Model="InputModel" FormName="BacklogProjectCreate" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>
+            آیدی پروژه
+            <InputText @bind-Value="InputModel!.Key" required />
+        </label>
+    </div>
+    <button type="submit">بساز</button>
+</EditForm>
+
+@code {
+
+    [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    [SupplyParameterFromForm]
+    private FormModel? InputModel { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        InputModel ??= new();
+
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (AuthenticationStateTask is null)
+            return;
+
+        var authenticationState = await AuthenticationStateTask;
+        var username = authenticationState.User.Identity?.Name;
+
+        if (username is null)
+            return;
+
+        Project project = new() { OwnerKey = username, Key = InputModel.Key };
+        project.OwnerKey = username;
+        Db.Projects.Add(project);
+        await Db.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Backlog");
+    }
+
+    class FormModel
+    {
+        public string Key { get; set; } = "";
+    }
+}

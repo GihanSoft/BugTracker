@@ -1,0 +1,58 @@
+﻿@page "/Backlog"
+
+@using BugTracker.Main.Features.Backlog
+@using BugTracker.Main.Features.Backlog.Data
+@using Microsoft.EntityFrameworkCore
+
+@inject NavigationManager Navigation
+@inject BacklogDbContext Db
+
+<PageTitle>پروژه‌ها</PageTitle>
+
+<h3>پروژه‌های من</h3>
+
+<div>
+    <NavLink href="Backlog/Projects/Create">Create New Project</NavLink>
+</div>
+
+@if (projects is null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!projects.Any())
+{
+    <p>No projects found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var project in projects)
+        {
+            <li>
+                @{
+                    var link = $"/Backlog/{project.OwnerKey}/{project.Key}";
+                }
+
+                <NavLink href="@link">@project.Key</NavLink>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Project>? projects;
+
+    [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationStateTask is null) return;
+
+        var authenticationState = await AuthenticationStateTask;
+        var username = authenticationState.User.Identity?.Name;
+
+        if (username is null) return;
+
+        projects = await Db.Projects.Where(x => x.OwnerKey == username).ToListAsync();
+    }
+}

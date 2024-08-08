@@ -7,11 +7,12 @@
     <UserSecretsId>24a9b41b-0ca2-403e-b97a-0d00ccf9ec4e</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="Components\Pages\Identity\_imports.razor" />
-  </ItemGroup>
+  <ImportGroup>
+    <Import Project="..\..\lib\GihanSoft.Framework\src\GihanSoft.Framework.Core\GihanSoft.Framework.Core.targets" />
+  </ImportGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\GihanSoft.Framework\src\GihanSoft.Framework.Core\GihanSoft.Framework.Core.csproj" />
     <ProjectReference Include="..\..\lib\GihanSoft.Framework\src\GihanSoft.Framework.Web\GihanSoft.Framework.Web.csproj" />
   </ItemGroup>
 
@@ -23,18 +24,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Components\Pages\Identity\_imports.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Components\Pages\Identity\_imports.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Components\Pages\Identity\_Imports.razor" />
+    <PackageReference Include="StronglyTypedId" Version="1.0.0-beta08" />
   </ItemGroup>
 
 </Project>

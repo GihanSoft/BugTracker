@@ -1,0 +1,95 @@
+﻿@page "/Backlog/{OwnerKey}/{ProjectKey}/{Id?}"
+
+@using BugTracker.Main.Features.Backlog
+@using BugTracker.Main.Features.Backlog.Data
+@using Microsoft.EntityFrameworkCore
+
+@inject BacklogDbContext Db
+
+<NavLink href=@($"/Backlog/{OwnerKey}/{ProjectKey}/PBI/Create")> جدید </NavLink>
+
+@if (_currentItem is not null)
+{
+    <form data-enhance href=@PbiIdToLink(_currentItem.Id) method="post" @formname="backlog-pbi-delete" @onsubmit="OnDeleteSubmit">
+        <AntiforgeryToken />
+        <button type="submit">حذف</button>
+    </form>
+    <div>
+        <input value="@_currentItem.Title" />
+    </div>
+    <div>
+        <textarea value="@_currentItem.Description" />
+    </div>
+}
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>عنوان</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _items)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>
+                        <NavLink href=@PbiIdToLink(item.Id)>نمایش</NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string? OwnerKey { get; set; }
+    [Parameter] public string? ProjectKey { get; set; }
+
+    private IEnumerable<ProductBacklogItem> _items = [];
+    private ProductBacklogItem? _currentItem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (OwnerKey is null || ProjectKey is null)
+            return;
+
+        if (AuthenticationStateTask is null)
+            return;
+
+        var authenticationState = await AuthenticationStateTask;
+        var username = authenticationState.User.Identity?.Name;
+        if (username is null || username != OwnerKey)
+            return;
+
+        _items = await Db.ProductBacklogItems
+            .Include(x => x.Project)
+            .Where(x => x.Project.Key == ProjectKey && x.Project.OwnerKey == OwnerKey)
+            .ToListAsync();
+
+        if (Id is not null)
+        {
+            var typedId = ProductBacklogItemId.Parse(Id);
+            _currentItem = await Db.ProductBacklogItems
+                .FirstOrDefaultAsync(x => x.Id == typedId);
+        }
+    }
+
+    protected async Task OnDeleteSubmit()
+    {
+        if (_currentItem is null)
+            return;
+
+        Db.ProductBacklogItems.Remove(_currentItem);
+
+        var result = await Db.SaveChangesAsync();
+    }
+
+    private string PbiIdToLink(ProductBacklogItemId id) => $"/Backlog/{OwnerKey}/{ProjectKey}/{id.Value}";
+    private string PbiIdToDelete(ProductBacklogItemId id) => $"/Backlog/PBI/{id.Value}/Delete";
+}
