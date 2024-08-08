@@ -25,7 +25,8 @@ internal class ProjectConfig : IEntityTypeConfiguration<Project>
         builder.ToTable("project", "backlog");
         builder.HasIndex([nameof(Project.OwnerKey), nameof(Project.Key)]);
 
-        builder.Property(x => x.Id).HasConversion<ProjectId.EfCoreValueConverter>();
+        builder.Property(x => x.Id).HasConversion<ProjectId.EfCoreValueConverter>()
+            .UseIdentityAlwaysColumn();
         builder.Property(x => x.OwnerKey).HasMaxLength(256);
         builder.Property(x => x.Key).HasMaxLength(256);
     }

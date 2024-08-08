@@ -24,7 +24,8 @@ internal class ProductBacklogItemConfig : IEntityTypeConfiguration<ProductBacklo
     {
         builder.ToTable("product_backlog_item", "backlog");
 
-        builder.Property(x => x.Id).HasConversion<ProductBacklogItemId.EfCoreValueConverter>();
+        builder.Property(x => x.Id).HasConversion<ProductBacklogItemId.EfCoreValueConverter>()
+            .UseIdentityAlwaysColumn();
         builder.Property(x => x.Title).HasMaxLength(1024);
         builder.Property(x => x.ProjectId).HasConversion<ProjectId.EfCoreValueConverter>();
     }
