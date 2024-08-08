@@ -14,11 +14,26 @@
         <AntiforgeryToken />
         <button type="submit">حذف</button>
     </form>
-    <div>
-        <input value="@_currentItem.Title" />
-    </div>
-    <div>
-        <textarea value="@_currentItem.Description" />
+    <div class="f">
+        <EditForm Enhance
+                  Model="EditInput"
+                  FormName="backlog-pbi-edit"
+                  OnValidSubmit="OnEditValidSubmit"
+                  class="vertical-mini-form">
+            <div>
+                <label>
+                    عنوان:
+                    <InputText @bind-Value="EditInput.Title" required />
+                </label>
+            </div>
+            <div>
+                <label>
+                    شرح:
+                    <InputTextArea @bind-Value="EditInput.Description" />
+                </label>
+            </div>
+            <button type="submit">ذخیره</button>
+        </EditForm>
     </div>
 }
 
@@ -51,6 +66,8 @@
     [Parameter] public string? OwnerKey { get; set; }
     [Parameter] public string? ProjectKey { get; set; }
 
+    [SupplyParameterFromForm] private EditInputModel? EditInput { get; set; }
+
     private IEnumerable<ProductBacklogItem> _items = [];
     private ProductBacklogItem? _currentItem;
 
@@ -77,7 +94,36 @@
             var typedId = ProductBacklogItemId.Parse(Id);
             _currentItem = await Db.ProductBacklogItems
                 .FirstOrDefaultAsync(x => x.Id == typedId);
+            if (EditInput is null)
+            {
+                EditInput ??= new();
+                EditInput.Title = _currentItem?.Title;
+                EditInput.Description = _currentItem?.Description;
+            }
         }
+    }
+
+    private async Task OnEditValidSubmit()
+    {
+        if (OwnerKey is null || ProjectKey is null)
+            return;
+
+        if (AuthenticationStateTask is null)
+            return;
+
+        var authenticationState = await AuthenticationStateTask;
+        var username = authenticationState.User.Identity?.Name;
+        if (username is null || username != OwnerKey)
+            return;
+
+        if (_currentItem is null)
+            return;
+
+        Db.ProductBacklogItems.Attach(_currentItem);
+        _currentItem.Title = EditInput.Title ?? "";
+        _currentItem.Description = EditInput.Description ?? "";
+
+        await Db.SaveChangesAsync();
     }
 
     protected async Task OnDeleteSubmit()
@@ -92,4 +138,10 @@
 
     private string PbiIdToLink(ProductBacklogItemId id) => $"/Backlog/{OwnerKey}/{ProjectKey}/{id.Value}";
     private string PbiIdToDelete(ProductBacklogItemId id) => $"/Backlog/PBI/{id.Value}/Delete";
+
+    class EditInputModel
+    {
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+    }
 }
