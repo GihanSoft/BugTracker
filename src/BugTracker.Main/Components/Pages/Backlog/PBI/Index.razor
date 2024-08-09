@@ -5,6 +5,7 @@
 @using Microsoft.EntityFrameworkCore
 
 @inject BacklogDbContext Db
+@inject NavigationManager NavigationManager
 
 <NavLink href=@($"/Backlog/{OwnerKey}/{ProjectKey}/PBI/Create")> جدید </NavLink>
 
@@ -124,6 +125,7 @@
         _currentItem.Description = EditInput.Description ?? "";
 
         await Db.SaveChangesAsync();
+        NavigationManager.NavigateTo(NavigationManager.Uri);
     }
 
     protected async Task OnDeleteSubmit()
