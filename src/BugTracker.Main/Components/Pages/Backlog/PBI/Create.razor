@@ -3,6 +3,7 @@
 @using Microsoft.EntityFrameworkCore
 
 @inject BacklogDbContext Db
+@inject NavigationManager NavigationManager
 
 <PageTitle>PBI جدید</PageTitle>
 
@@ -57,6 +58,7 @@
             });
 
         var result = await Db.SaveChangesAsync();
+        NavigationManager.NavigateTo($"/Backlog/{OwnerKey}/{ProjectKey}");
     }
 
     class FormInput
