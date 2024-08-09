@@ -1,10 +1,4 @@
-﻿#page-container {
-  width: 100%;
-  max-width: 1000px;
-  justify-self: center;
-  display: grid;
-}
-
+﻿
 #blazor-error-ui {
   background: lightyellow;
   bottom: 0;

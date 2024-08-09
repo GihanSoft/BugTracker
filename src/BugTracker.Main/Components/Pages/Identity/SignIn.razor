@@ -7,34 +7,38 @@
 @inject SignInManager<AppUser> SignInManager
 @inject NavigationManager NavigationManager
 
-<div class="flat-card">
-    <EditForm Enhance FormName="SignIn" Model="InputModel" OnValidSubmit="OnValidSubmit" class="vertical-mini-form">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div>
-            <label>
-                نام کاربری
-                <InputText @bind-Value="InputModel!.UserName" required />
-            </label>
+<div class="flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+    <div class="card">
+        <div class="card-body">
+            <EditForm Enhance FormName="SignIn" Model="InputModel" OnValidSubmit="OnValidSubmit" class="d-flex flex-column gap-3">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div>
+                    <label class="form-label">
+                        نام کاربری
+                        <InputText @bind-Value="InputModel!.UserName" required class="form-control" />
+                    </label>
+                </div>
+                <div>
+                    <label class="form-label">
+                        گذرواژه
+                        <InputText @bind-Value="InputModel!.Password" type="password" required class="form-control" />
+                    </label>
+                </div>
+                <div>
+                    <label class="form-check-label d-flex gap-2">
+                        <InputCheckbox @bind-Value="InputModel!.Remember" class="form-check-input" />
+                        مرا به خاطر بسپار
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">ورود</button>
+            </EditForm>
         </div>
-        <div>
-            <label>
-                گذرواژه
-                <InputText @bind-Value="InputModel!.Password" type="password" required />
-            </label>
+        <div class="card-footer">
+            <NavLink href="/Identity/SignUp" class="link-info link-offset-1 link-underline-opacity-50 link-underline-opacity-100-hover">ثبت‌نام</NavLink>
+            <span>|</span>
+            <NavLink href="/Identity/ForgotPassword" class="link-info link-offset-1 link-underline-opacity-50 link-underline-opacity-100-hover">فراموشی گذرواژه</NavLink>
         </div>
-        <div>
-            <label>
-                مرا به خاطر بسپار
-                <InputCheckbox @bind-Value="InputModel!.Remember" />
-            </label>
-        </div>
-        <button type="submit" class="btn-primary">ورود</button>
-    </EditForm>
-    <div>
-        <NavLink href="/Identity/SignUp">ثبت‌نام</NavLink>
-        <span>|</span>
-        <NavLink href="/Identity/ForgotPassword">فراموشی گذرواژه</NavLink>
     </div>
 </div>
 

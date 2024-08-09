@@ -9,39 +9,41 @@
 
 @attribute [Authorize("sarvar")]
 
-<div class="flat-card">
-    <h3>SignUp</h3>
+<div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+    <div class="card">
+        <div class="card-body">
+            <EditForm Enhance FormName="SignIn" Model="InputModel" OnValidSubmit="OnValidSubmit" class="d-flex flex-column gap-2">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-    <EditForm Enhance FormName="SignIn" Model="InputModel" OnValidSubmit="OnValidSubmit" class="vertical-mini-form">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <div>
-            <label>
-                نام کاربری
-                <InputText @bind-Value="InputModel!.UserName" required />
-            </label>
+                <div>
+                    <label>
+                        نام کاربری
+                        <InputText @bind-Value="InputModel!.UserName" required class="form-control" />
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        گذرواژه
+                        <InputText type="password" @bind-Value="InputModel.Password" required class="form-control" />
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        تایید گذرواژه
+                        <InputText type="password" @bind-Value="InputModel.PasswordConfirmation" required class="form-control" />
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        رایانامه
+                        <InputText @bind-Value="InputModel.Email" type="email" autocomplete="email" class="form-control" />
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">ذخیره</button>
+            </EditForm>
         </div>
-        <div>
-            <label>
-                گذرواژه
-                <InputText type="password" @bind-Value="InputModel.Password" required />
-            </label>
-        </div>
-        <div>
-            <label>
-                تایید گذرواژه
-                <InputText type="password" @bind-Value="InputModel.PasswordConfirmation" required />
-            </label>
-        </div>
-        <div>
-            <label>
-                رایانامه
-                <InputText @bind-Value="InputModel.Email" type="email" autocomplete="email" />
-            </label>
-        </div>
-        <button type="submit" class="btn-primary">ذخیره</button>
-    </EditForm>
+    </div>
 </div>
 
 @code {

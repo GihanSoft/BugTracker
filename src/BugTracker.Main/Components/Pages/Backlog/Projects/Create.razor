@@ -10,18 +10,24 @@
 
 <h3>ساختن پروژه جدید</h3>
 
-<EditForm Model="InputModel" FormName="BacklogProjectCreate" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+    <div class="card">
+        <div class="card-body">
+            <EditForm Model="InputModel" FormName="BacklogProjectCreate" OnValidSubmit="HandleValidSubmit" class="d-flex flex-column gap-2">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-    <div>
-        <label>
-            آیدی پروژه
-            <InputText @bind-Value="InputModel!.Key" required />
-        </label>
+                <div>
+                    <label>
+                        آیدی پروژه
+                        <InputText @bind-Value="InputModel!.Key" required class="form-control" />
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">بساز</button>
+            </EditForm>
+        </div>
     </div>
-    <button type="submit">بساز</button>
-</EditForm>
+</div>
 
 @code {
 

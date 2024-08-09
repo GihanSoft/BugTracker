@@ -9,6 +9,27 @@
 
 <h3>PBI جدید</h3>
 
+<div class="flex-grow-1">
+    <EditForm Enhance
+              Model="Input"
+              FormName="backlog-pbi-create"
+              OnValidSubmit="OnValidSubmit">
+        <div>
+            <label class="form-label w-100">
+                عنوان:
+                <InputText @bind-Value="Input.Title" required class="form-control w-100" />
+            </label>
+        </div>
+        <div>
+            <label class="form-label w-100">
+                شرح:
+                <InputTextArea @bind-Value="Input.Description" class="form-control w-100" />
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary w-25">ذخیره</button>
+    </EditForm>
+</div>
+@*
 <EditForm Model="_input" FormName="backlog-pbi-create" Enhance class="vertical-mini-form" OnValidSubmit="OnValidSubmit">
     <label>
         عنوان:
@@ -22,14 +43,14 @@
         <button type="submit">ایجاد</button>
     </div>
 </EditForm>
-
+ *@
 @code {
     [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
 
     [Parameter] public string? OwnerKey { get; set; }
     [Parameter] public string? ProjectKey { get; set; }
 
-    [SupplyParameterFromForm] private FormInput _input { get; set; } = new();
+    [SupplyParameterFromForm] private FormInput Input { get; set; } = new();
 
     private async Task OnValidSubmit(EditContext editContext)
     {
@@ -51,8 +72,8 @@
         await Db.ProductBacklogItems.AddAsync(new Features.Backlog.ProductBacklogItem
             {
                 Id = new Features.Backlog.ProductBacklogItemId(0),
-                Title = _input.Title!,
-                Description = _input.Content ?? "",
+                Title = Input.Title!,
+                Description = Input.Description ?? "",
                 ProjectId = project.Id,
                 Project = null!,
             });
@@ -64,6 +85,6 @@
     class FormInput
     {
         public string? Title { get; set; }
-        public string? Content { get; set; }
+        public string? Description { get; set; }
     }
 }

@@ -10,7 +10,7 @@
 @attribute [Authorize("sarvar")]
 
 <div>
-    <table>
+    <table class="table table-striped table-sm">
         <thead>
             <tr>
                 <th>Id</th>
@@ -41,7 +41,7 @@
     </table>
 </div>
 
-@code{
+@code {
     private IReadOnlyList<AppUser> _users = [];
     protected override async Task OnInitializedAsync()
     {

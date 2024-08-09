@@ -7,57 +7,59 @@
 @inject BacklogDbContext Db
 @inject NavigationManager NavigationManager
 
-<NavLink href=@($"/Backlog/{OwnerKey}/{ProjectKey}/PBI/Create")> جدید </NavLink>
+<div class="container flex-grow-1 d-flex flex-column gap-2">
+    <NavLink href=@($"/Backlog/{OwnerKey}/{ProjectKey}/PBI/Create") class="btn btn-outline-primary w-25"> جدید </NavLink>
 
-@if (_currentItem is not null)
-{
-    <form data-enhance href=@PbiIdToLink(_currentItem.Id) method="post" @formname="backlog-pbi-delete" @onsubmit="OnDeleteSubmit">
-        <AntiforgeryToken />
-        <button type="submit">حذف</button>
-    </form>
-    <div class="f">
-        <EditForm Enhance
-                  Model="EditInput"
-                  FormName="backlog-pbi-edit"
-                  OnValidSubmit="OnEditValidSubmit"
-                  class="vertical-mini-form">
-            <div>
-                <label>
-                    عنوان:
-                    <InputText @bind-Value="EditInput.Title" required />
-                </label>
-            </div>
-            <div>
-                <label>
-                    شرح:
-                    <InputTextArea @bind-Value="EditInput.Description" />
-                </label>
-            </div>
-            <button type="submit">ذخیره</button>
-        </EditForm>
-    </div>
-}
+    @if (_currentItem is not null)
+    {
+        <form data-enhance href=@PbiIdToLink(_currentItem.Id) method="post" @formname="backlog-pbi-delete" @onsubmit="OnDeleteSubmit">
+            <AntiforgeryToken />
+            <button type="submit" class="btn btn-danger w-25">حذف</button>
+        </form>
+        <div class="flex-grow-1">
+            <EditForm Enhance
+                      Model="EditInput"
+                      FormName="backlog-pbi-edit"
+                      OnValidSubmit="OnEditValidSubmit"
+                      class="vertical-mini-form">
+                <div>
+                    <label class="form-label w-100">
+                        عنوان:
+                        <InputText @bind-Value="EditInput.Title" required class="form-control w-100" />
+                    </label>
+                </div>
+                <div>
+                    <label class="form-label w-100">
+                        شرح:
+                        <InputTextArea @bind-Value="EditInput.Description" class="form-control w-100" />
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary w-25">ذخیره</button>
+            </EditForm>
+        </div>
+    }
 
-<div>
-    <table>
-        <thead>
-            <tr>
-                <th>عنوان</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in _items)
-            {
+    <div>
+        <table class="table table-striped table-sm">
+            <thead>
                 <tr>
-                    <td>@item.Title</td>
-                    <td>
-                        <NavLink href=@PbiIdToLink(item.Id)>نمایش</NavLink>
-                    </td>
+                    <th>عنوان</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in _items)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>
+                            <NavLink href=@PbiIdToLink(item.Id) class="link-primary link-underline-opacity-0">نمایش</NavLink>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @code {

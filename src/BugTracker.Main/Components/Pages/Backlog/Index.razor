@@ -9,35 +9,37 @@
 
 <PageTitle>پروژه‌ها</PageTitle>
 
-<h3>پروژه‌های من</h3>
+<div class="flex-grow-1 container d-flex flex-column gap-3">
+    <h3>پروژه‌های من</h3>
 
-<div>
-    <NavLink href="Backlog/Projects/Create">Create New Project</NavLink>
+    <div>
+        <NavLink href="Backlog/Projects/Create" class="btn btn-primary">ایجاد پروژه جدید</NavLink>
+    </div>
+
+    @if (projects is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (!projects.Any())
+    {
+        <p>No projects found.</p>
+    }
+    else
+    {
+        <ul class="list-inline d-flex flex-column flex-sm-row flex-nowrap flex-sm-wrap gap-2 justify-content-around">
+            @foreach (var project in projects)
+            {
+                <li>
+                    @{
+                        var link = $"/Backlog/{project.OwnerKey}/{project.Key}";
+                    }
+
+                    <NavLink href="@link" class="btn btn-outline-info w-100">@project.Key</NavLink>
+                </li>
+            }
+        </ul>
+    }
 </div>
-
-@if (projects is null)
-{
-    <p><em>Loading...</em></p>
-}
-else if (!projects.Any())
-{
-    <p>No projects found.</p>
-}
-else
-{
-    <ul>
-        @foreach (var project in projects)
-        {
-            <li>
-                @{
-                    var link = $"/Backlog/{project.OwnerKey}/{project.Key}";
-                }
-
-                <NavLink href="@link">@project.Key</NavLink>
-            </li>
-        }
-    </ul>
-}
 
 @code {
     private List<Project>? projects;
@@ -46,12 +48,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if (AuthenticationStateTask is null) return;
+        if (AuthenticationStateTask is null)
+            return;
 
         var authenticationState = await AuthenticationStateTask;
         var username = authenticationState.User.Identity?.Name;
 
-        if (username is null) return;
+        if (username is null)
+            return;
 
         projects = await Db.Projects.Where(x => x.OwnerKey == username).ToListAsync();
     }
