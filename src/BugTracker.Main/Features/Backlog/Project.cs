@@ -23,7 +23,8 @@ internal class ProjectConfig : IEntityTypeConfiguration<Project>
     public void Configure(EntityTypeBuilder<Project> builder)
     {
         builder.ToTable("project", "backlog");
-        builder.HasIndex([nameof(Project.OwnerKey), nameof(Project.Key)]);
+        builder.HasIndex([nameof(Project.OwnerKey), nameof(Project.Key)])
+            .IsUnique(true);
 
         builder.Property(x => x.Id).HasConversion<ProjectId.EfCoreValueConverter>()
             .UseIdentityAlwaysColumn();
