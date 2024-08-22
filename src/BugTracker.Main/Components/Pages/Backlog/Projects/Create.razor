@@ -4,7 +4,7 @@
 @using BugTracker.Main.Features.Backlog.Data
 
 @inject NavigationManager NavigationManager
-@inject BacklogDbContext Db
+@inject MediatR.IMediator Mediator
 
 <PageTitle>ساختن پروژه</PageTitle>
 
@@ -30,11 +30,8 @@
 </div>
 
 @code {
-
-    [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
-
     [SupplyParameterFromForm]
-    private FormModel? InputModel { get; set; }
+    private FormModel InputModel { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,22 +40,19 @@
         await Task.CompletedTask;
     }
 
-    private async Task HandleValidSubmit()
+    private async Task HandleValidSubmit(EditContext editContext)
     {
-        if (AuthenticationStateTask is null)
-            return;
-
-        var authenticationState = await AuthenticationStateTask;
-        var username = authenticationState.User.Identity?.Name;
-
-        if (username is null)
-            return;
-
-        Project project = new() { OwnerKey = username, Key = InputModel.Key };
-        project.OwnerKey = username;
-        Db.Projects.Add(project);
-        await Db.SaveChangesAsync();
-        NavigationManager.NavigateTo("/Backlog");
+        CreateProject.Request request = new(InputModel.Key);
+        var response = await Mediator.Send(request);
+        response.Match(
+            r => NavigationManager.NavigateTo("/Backlog"),
+            l =>
+            {
+                ValidationMessageStore validationMessageStore = new(editContext);
+                validationMessageStore.Add(() => request.Key, l.Message);
+                l.Inner.IfSome(inner => validationMessageStore.Add(() => request.Key, inner.Message));
+                editContext.NotifyValidationStateChanged();
+            });
     }
 
     class FormModel

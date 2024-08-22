@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Main.Features.Backlog.Data;
+using EntityFramework.Exceptions.PostgreSQL;
 
 namespace BugTracker.Main.Features.Backlog.Startup;
 
@@ -29,6 +30,8 @@ internal static class BacklogServices
 
             builder.UseSnakeCaseNamingConvention();
             builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+            builder.UseExceptionProcessor();
 
             builder.ConfigureWarnings(opt =>
                 opt.Log([
