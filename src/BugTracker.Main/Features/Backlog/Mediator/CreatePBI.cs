@@ -1,5 +1,4 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 using BugTracker.Main.Features.Backlog.Data;
 
@@ -12,7 +11,7 @@ using Riok.Mapperly.Abstractions;
 namespace BugTracker.Main.Features.Backlog.Mediator;
 
 [Mapper]
-internal static partial class CreatePbi
+internal static partial class CreatePBI
 {
     public record Request(string ProjectOwner, string ProjectKey, string Title, string Description) : IRequest<Either<Error, Response>>;
     public record Response(ProductBacklogItemId Id);
