@@ -27,11 +27,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+    <PackageReference Include="Riok.Mapperly" Version="3.6.0" />
     <PackageReference Include="StronglyTypedId" Version="1.0.0-beta08" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="LanguageExt" />
+    <Using Include="LanguageExt.Common" />
     <Using Include="LanguageExt.Prelude" Static="true" />
   </ItemGroup>
 

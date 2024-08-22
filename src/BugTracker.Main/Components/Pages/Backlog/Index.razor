@@ -5,7 +5,7 @@
 @using Microsoft.EntityFrameworkCore
 
 @inject NavigationManager Navigation
-@inject BacklogDbContext Db
+@inject MediatR.IMediator Mediator
 
 <PageTitle>پروژه‌ها</PageTitle>
 
@@ -42,21 +42,14 @@
 </div>
 
 @code {
-    private List<Project>? projects;
-
-    [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+    private IReadOnlyCollection<QueryProjects.Response.Project>? projects;
 
     protected override async Task OnInitializedAsync()
     {
-        if (AuthenticationStateTask is null)
-            return;
-
-        var authenticationState = await AuthenticationStateTask;
-        var username = authenticationState.User.Identity?.Name;
-
-        if (username is null)
-            return;
-
-        projects = await Db.Projects.Where(x => x.OwnerKey == username).ToListAsync();
+        QueryProjects.Request request = new();
+        var response = await Mediator.Send(request);
+        response.Match(
+            r => projects = r.Projects,
+            error => throw error.ToException());
     }
 }
