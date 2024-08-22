@@ -116,35 +116,13 @@
 
     private async Task OnEditValidSubmit()
     {
-        if (OwnerKey is null || ProjectKey is null)
-            return;
-
-        if (AuthenticationStateTask is null)
-            return;
-
-        var authenticationState = await AuthenticationStateTask;
-        var username = authenticationState.User.Identity?.Name;
-        if (username is null || username != OwnerKey)
-            return;
-
-        if (_currentItem.IsNone)
-            return;
-
         var id = ProductBacklogItemId.Parse(Id!);
-        ProductBacklogItem currentItem = new()
-            {
-                Id = id,
-                Title = null!,
-                Description = null!,
-                Project = null!,
-                ProjectId = ProjectId.Empty,
-            };
-
-        Db.ProductBacklogItems.Attach(currentItem);
-        currentItem.Title = EditInput.Title ?? "";
-        currentItem.Description = EditInput.Description ?? "";
-
-        await Db.SaveChangesAsync();
+        UpdatePBI.Request request = new(id, EditInput!.Title ?? "", EditInput.Description ?? "");
+        var response = await Mediator.Send(request);
+        response.Match(
+            _ => { },
+            error => throw error.ToException()
+        );
         NavigationManager.NavigateTo(NavigationManager.Uri);
     }
 
