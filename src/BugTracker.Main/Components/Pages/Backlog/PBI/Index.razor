@@ -5,6 +5,7 @@
 @using Microsoft.EntityFrameworkCore
 
 @inject BacklogDbContext Db
+@inject MediatR.IMediator Mediator
 @inject NavigationManager NavigationManager
 
 <div class="container flex-grow-1 d-flex flex-column gap-2">
@@ -71,7 +72,7 @@
 
     [SupplyParameterFromForm] private EditInputModel? EditInput { get; set; }
 
-    private IEnumerable<ProductBacklogItem> _items = [];
+    private IReadOnlyCollection<QueryPBIs.Response.PBI> _items = [];
     private ProductBacklogItem? _currentItem;
 
     protected override async Task OnInitializedAsync()
@@ -87,10 +88,12 @@
         if (username is null || username != OwnerKey)
             return;
 
-        _items = await Db.ProductBacklogItems
-            .Include(x => x.Project)
-            .Where(x => x.Project.Key == ProjectKey && x.Project.OwnerKey == OwnerKey)
-            .ToListAsync();
+        QueryPBIs.Request request = new(OwnerKey, ProjectKey);
+        var response = await Mediator.Send(request);
+        response.Match(
+            r => _items = r.PBIs,
+            error => throw error.ToException()
+        );
 
         if (Id is not null)
         {
