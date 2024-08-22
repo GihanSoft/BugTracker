@@ -16,7 +16,7 @@ internal static partial class QueryPBIs
     public record Request(string ProjectOwner, string ProjectKey) : IRequest<Either<Error, Response>>;
     public record Response(IReadOnlyCollection<Response.PBI> PBIs)
     {
-        public record PBI(ProductBacklogItemId Id, string Title, string Description);
+        public record PBI(ProductBacklogItemId Id, string Title);
     }
 
     public class Handler(
