@@ -11,9 +11,9 @@
 <div class="container flex-grow-1 d-flex flex-column gap-2">
     <NavLink href=@($"/Backlog/{OwnerKey}/{ProjectKey}/PBI/Create") class="btn btn-outline-primary w-25"> جدید </NavLink>
 
-    @if (_currentItem is not null)
+    @if (_currentItem.IsSome)
     {
-        <form data-enhance href=@PbiIdToLink(_currentItem.Id) method="post" @formname="backlog-pbi-delete" @onsubmit="OnDeleteSubmit">
+        <form data-enhance href=@PbiIdToLink(Id) method="post" @formname="backlog-pbi-delete" @onsubmit="OnDeleteSubmit">
             <AntiforgeryToken />
             <button type="submit" class="btn btn-danger w-25">حذف</button>
         </form>
@@ -54,7 +54,7 @@
                     <tr>
                         <td>@item.Title</td>
                         <td>
-                            <NavLink href=@PbiIdToLink(item.Id) class="link-primary link-underline-opacity-0">نمایش</NavLink>
+                            <NavLink href=@PbiIdToLink(item.Id.ToString()) class="link-primary link-underline-opacity-0">نمایش</NavLink>
                         </td>
                     </tr>
                 }
@@ -73,7 +73,7 @@
     [SupplyParameterFromForm] private EditInputModel? EditInput { get; set; }
 
     private IReadOnlyCollection<QueryPBIs.Response.PBI> _items = [];
-    private ProductBacklogItem? _currentItem;
+    private Option<ReadPBI.Response> _currentItem;
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,13 +98,18 @@
         if (Id is not null)
         {
             var typedId = ProductBacklogItemId.Parse(Id);
-            _currentItem = await Db.ProductBacklogItems
-                .FirstOrDefaultAsync(x => x.Id == typedId);
+            ReadPBI.Request readRequest = new(typedId);
+            var readResponse = await Mediator.Send(readRequest);
+            _currentItem = readResponse.Match(
+                Prelude.Some,
+                _ => Prelude.None
+            );
+
             if (EditInput is null)
             {
                 EditInput ??= new();
-                EditInput.Title = _currentItem?.Title;
-                EditInput.Description = _currentItem?.Description;
+                EditInput.Title = _currentItem.Match(x => x.Title, "");
+                EditInput.Description = _currentItem.Match(x => x.Description, "");
             }
         }
     }
@@ -122,12 +127,22 @@
         if (username is null || username != OwnerKey)
             return;
 
-        if (_currentItem is null)
+        if (_currentItem.IsNone)
             return;
 
-        Db.ProductBacklogItems.Attach(_currentItem);
-        _currentItem.Title = EditInput.Title ?? "";
-        _currentItem.Description = EditInput.Description ?? "";
+        var id = ProductBacklogItemId.Parse(Id!);
+        ProductBacklogItem currentItem = new()
+            {
+                Id = id,
+                Title = null!,
+                Description = null!,
+                Project = null!,
+                ProjectId = ProjectId.Empty,
+            };
+
+        Db.ProductBacklogItems.Attach(currentItem);
+        currentItem.Title = EditInput.Title ?? "";
+        currentItem.Description = EditInput.Description ?? "";
 
         await Db.SaveChangesAsync();
         NavigationManager.NavigateTo(NavigationManager.Uri);
@@ -135,15 +150,25 @@
 
     protected async Task OnDeleteSubmit()
     {
-        if (_currentItem is null)
+        if (_currentItem.IsNone)
             return;
 
-        Db.ProductBacklogItems.Remove(_currentItem);
+        var id = ProductBacklogItemId.Parse(Id!);
+        ProductBacklogItem currentItem = new()
+            {
+                Id = id,
+                Title = null!,
+                Description = null!,
+                Project = null!,
+                ProjectId = ProjectId.Empty,
+            };
+
+        Db.ProductBacklogItems.Remove(currentItem);
 
         var result = await Db.SaveChangesAsync();
     }
 
-    private string PbiIdToLink(ProductBacklogItemId id) => $"/Backlog/{OwnerKey}/{ProjectKey}/{id.Value}";
+    private string PbiIdToLink(string id) => $"/Backlog/{OwnerKey}/{ProjectKey}/{id}";
     private string PbiIdToDelete(ProductBacklogItemId id) => $"/Backlog/PBI/{id.Value}/Delete";
 
     class EditInputModel
