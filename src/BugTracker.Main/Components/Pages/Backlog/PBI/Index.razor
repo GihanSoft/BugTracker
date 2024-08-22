@@ -128,26 +128,17 @@
 
     protected async Task OnDeleteSubmit()
     {
-        if (_currentItem.IsNone)
-            return;
-
         var id = ProductBacklogItemId.Parse(Id!);
-        ProductBacklogItem currentItem = new()
-            {
-                Id = id,
-                Title = null!,
-                Description = null!,
-                Project = null!,
-                ProjectId = ProjectId.Empty,
-            };
-
-        Db.ProductBacklogItems.Remove(currentItem);
-
-        var result = await Db.SaveChangesAsync();
+        DeletePBI.Request request = new(id);
+        var response = await Mediator.Send(request);
+        response.Match(
+            _ => { },
+            error => throw error.ToException()
+        );
+        NavigationManager.NavigateTo(NavigationManager.Uri);
     }
 
     private string PbiIdToLink(string id) => $"/Backlog/{OwnerKey}/{ProjectKey}/{id}";
-    private string PbiIdToDelete(ProductBacklogItemId id) => $"/Backlog/PBI/{id.Value}/Delete";
 
     class EditInputModel
     {
