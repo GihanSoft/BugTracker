@@ -1,3 +1,4 @@
+using BugTracker.Main;
 using BugTracker.Main.Components;
 using BugTracker.Main.Features.Backlog.Startup;
 using BugTracker.Main.Features.Identity.Startup;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<ForwardedHeadersOptions>(builder.Configuration.GetSection(nameof(ForwardedHeadersOptions)));
 
 builder.Services.AddRazorComponents();
+builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<IAssemblyMarker>());
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddBacklogService();
 
