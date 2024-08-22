@@ -1,9 +1,6 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 using BugTracker.Main.Features.Backlog.Data;
-
-using LanguageExt.Common;
 
 using MediatR;
 
