@@ -2,8 +2,8 @@
 @using BugTracker.Main.Features.Backlog.Data
 @using Microsoft.EntityFrameworkCore
 
-@inject BacklogDbContext Db
 @inject NavigationManager NavigationManager
+@inject MediatR.IMediator Mediator
 
 <PageTitle>PBI جدید</PageTitle>
 
@@ -29,24 +29,8 @@
         <button type="submit" class="btn btn-primary w-25">ذخیره</button>
     </EditForm>
 </div>
-@*
-<EditForm Model="_input" FormName="backlog-pbi-create" Enhance class="vertical-mini-form" OnValidSubmit="OnValidSubmit">
-    <label>
-        عنوان:
-        <InputText @bind-Value="_input!.Title" required />
-    </label>
-    <label>
-        توضیح:
-        <InputTextArea @bind-Value="_input!.Content" />
-    </label>
-    <div>
-        <button type="submit">ایجاد</button>
-    </div>
-</EditForm>
- *@
-@code {
-    [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
 
+@code {
     [Parameter] public string? OwnerKey { get; set; }
     [Parameter] public string? ProjectKey { get; set; }
 
@@ -54,31 +38,13 @@
 
     private async Task OnValidSubmit(EditContext editContext)
     {
-        if (OwnerKey is null || ProjectKey is null)
-            return;
+        CreatePbi.Request request = new(
+            OwnerKey ?? "",
+            ProjectKey ?? "",
+            Input.Title ?? "",
+            Input.Description ?? "");
 
-        if (AuthenticationStateTask is null)
-            return;
-
-        var authenticationState = await AuthenticationStateTask;
-        var username = authenticationState.User.Identity?.Name;
-        if (username is null || username != OwnerKey)
-            return;
-
-        var project = await Db.Projects.FirstOrDefaultAsync(x => x.OwnerKey == OwnerKey && x.Key == ProjectKey);
-        if (project is null)
-            return;
-
-        await Db.ProductBacklogItems.AddAsync(new Features.Backlog.ProductBacklogItem
-            {
-                Id = new Features.Backlog.ProductBacklogItemId(0),
-                Title = Input.Title!,
-                Description = Input.Description ?? "",
-                ProjectId = project.Id,
-                Project = null!,
-            });
-
-        var result = await Db.SaveChangesAsync();
+        var response = await Mediator.Send(request);
         NavigationManager.NavigateTo($"/Backlog/{OwnerKey}/{ProjectKey}");
     }
 
