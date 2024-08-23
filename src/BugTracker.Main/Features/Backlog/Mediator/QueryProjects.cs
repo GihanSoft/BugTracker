@@ -36,7 +36,10 @@ internal static partial class QueryProjects
             }
 
             var baseQuery = _db.Projects.Where(x => x.OwnerKey == username);
-            var projects = await baseQuery.Map().ToListAsync(ct);
+            var projects = await baseQuery
+                .OrderByDescending(x => x.CreationMoment)
+                .Map()
+                .ToListAsync(ct);
             return new Response(projects.AsReadOnly());
         }
     }

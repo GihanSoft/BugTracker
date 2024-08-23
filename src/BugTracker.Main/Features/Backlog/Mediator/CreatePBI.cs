@@ -55,6 +55,7 @@ internal static partial class CreatePBI
 
                 Title = "",
                 Description = "",
+                CreationMoment = default!,
             };
 
             request.Map(pbi);

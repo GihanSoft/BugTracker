@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BugTracker.Main.Common.Ef.ValueGenerators;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using StronglyTypedIds;
@@ -14,6 +16,8 @@ internal class ProductBacklogItem
     public required string Title { get; set; }
     public required string Description { get; set; }
 
+    public required DateTime CreationMoment { get; set; }
+
     public required ProjectId ProjectId { get; set; }
     public required Project Project { get; set; }
 }
@@ -28,5 +32,9 @@ internal class ProductBacklogItemConfig : IEntityTypeConfiguration<ProductBacklo
             .UseIdentityAlwaysColumn();
         builder.Property(x => x.Title).HasMaxLength(1024);
         builder.Property(x => x.ProjectId).HasConversion<ProjectId.EfCoreValueConverter>();
+
+        builder.Property(x => x.CreationMoment)
+            .ValueGeneratedOnAdd()
+            .HasValueGenerator<UtcNowDateTimeValueGenerator>();
     }
 }

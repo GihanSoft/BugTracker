@@ -37,6 +37,7 @@ internal static partial class QueryPBIs
 
             var baseQuery = _db.ProductBacklogItems.Where(x => x.Project.OwnerKey == username);
             var pbiList = await baseQuery.Where(x => x.Project.Key == request.ProjectKey)
+                .OrderByDescending(x => x.CreationMoment)
                 .Map()
                 .ToListAsync(cancellationToken);
 

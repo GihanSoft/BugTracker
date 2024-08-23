@@ -35,7 +35,9 @@ internal static class CreateProject
             Project project = new()
             {
                 OwnerKey = username,
-                Key = request.Key
+                Key = request.Key,
+
+                CreationMoment = default!,
             };
 
             await _db.AddAsync(project, ct);
