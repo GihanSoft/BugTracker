@@ -1,4 +1,21 @@
 ﻿@page "/"
 <PageTitle>خانه</PageTitle>
+@inject NavigationManager NavigationManager
 
 <h2> باگ بان </h2>
+
+@code {
+    [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationStateTask is not null)
+        {
+            var authState = await AuthenticationStateTask;
+            if (authState.User.Identity?.IsAuthenticated == true)
+            {
+                NavigationManager.NavigateTo("/Backlog", replace: true);
+            }
+        }
+    }
+}
