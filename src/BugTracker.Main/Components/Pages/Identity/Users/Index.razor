@@ -5,7 +5,7 @@
 
 @page "/Identity/Users"
 
-@inject UserManager<AppUser> UserManager
+@inject MediatR.IMediator Mediator
 
 @attribute [Authorize("sarvar")]
 
@@ -13,14 +13,14 @@
     <table class="table table-striped table-sm">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>UserName</th>
-                <th>Email</th>
+                <th>شناسه</th>
+                <th>نام کاربری</th>
+                <th>رایانامه</th>
                 <th></th>
-                <th>PhoneNumber</th>
+                <th>شماره تماس</th>
                 <th></th>
-                <th>DisplayName</th>
-                <th>Avatar</th>
+                <th>نام نمایشی</th>
+                <th>آواتار</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +28,7 @@
             {
                 <tr>
                     <td>@item.Id</td>
-                    <td>@item.UserName</td>
+                    <td>@item.Username</td>
                     <td>@item.Email</td>
                     <td>@(item.EmailConfirmed ? "✔" : "❌")</td>
                     <td>@item.PhoneNumber</td>
@@ -42,10 +42,14 @@
 </div>
 
 @code {
-    private IReadOnlyList<AppUser> _users = [];
+    private IReadOnlyCollection<QueryUsers.Response.User> _users = [];
     protected override async Task OnInitializedAsync()
     {
-        var users = await UserManager.Users.ToListAsync();
-        _users = users.AsReadOnly();
+        QueryUsers.Request request = new();
+        var response = await Mediator.Send(request);
+        response.Match(
+            r => _users = r.Users,
+            error => throw error.ToException()
+        );
     }
 }
