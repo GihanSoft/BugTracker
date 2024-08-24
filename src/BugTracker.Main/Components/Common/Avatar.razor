@@ -1,0 +1,37 @@
+﻿@using System.Buffers
+@using System.Text
+@if (AvatarUrl is not null)
+{
+    <img src="@AvatarUrl" class="avatar" @attributes="AdditionalAttributes" />
+}
+else
+{
+    <span class="avatar">
+        @GetLetterAvatarString(AvatarAlt)
+    </span>
+}
+
+@code {
+    private static string GetLetterAvatarString(string? avatarAlt)
+    {
+        avatarAlt ??= "";
+        Span<Range> parts = stackalloc Range[3];
+        var letterCount = avatarAlt.AsSpan().Split(
+            parts,
+            ' ',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        StringBuilder stringBuilder = new();
+        for (int i = 0; i < letterCount; i++)
+        {
+            var letter = avatarAlt[parts[i].Start];
+            stringBuilder.Append(letter);
+        }
+
+        return stringBuilder.ToString();
+    }
+
+    [Parameter] public string? AvatarUrl { get; set; }
+    [Parameter] public string? AvatarAlt { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+}

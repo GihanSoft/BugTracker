@@ -5,64 +5,72 @@
 
 @attribute [Authorize]
 
-@inject UserManager<AppUser> UserManager
+@inject MediatR.IMediator Mediator
 
-@if (_user is not null)
+@if (_userInfo is not null)
 {
     <div>
-        @if (@_user.Avatar is not null)
-        {
-            <div>
-                <img src="@_user.Avatar" alt="user avatar" />
-            </div>
-        }
+        @* @if (_userInfo.Avatar is not null)
+    {
+    <div>
+    <img src="@_userInfo.Avatar" class="avatar" />
+    </div>
+    }
+    else
+    {
+    <div class="avatar">
+    <span>@_userInfo.UserName[0]</span>
+    </div>
+    } *@
+
+        <Avatar AvatarUrl="@_userInfo.Avatar" AvatarAlt="@_userInfo.UserName" alt="avatar" />
+
         <div>
-            <span>نام نمایشی:</span> <span>@_user.DisplayName</span>
+            <span>نام نمایشی:</span> <span>@_userInfo.DisplayName</span>
         </div>
         <div>
-            <span>نام کاربری:</span> <span>@_user.UserName</span>
+            <span>نام کاربری:</span> <span>@_userInfo.UserName</span>
         </div>
         <div>
-            <span>رایانامه:</span> <span>@_user.Email</span>
-            <span>@(_user.EmailConfirmed ? "✔" : "❌")</span>
+            <span>رایانامه:</span> <span>@_userInfo.Email</span>
+            <span>@(_userInfo.EmailConfirmed ? "✔" : "❌")</span>
         </div>
         <div>
-            <span>موبایل:</span> <span>@_user.PhoneNumber</span>
-            <span>@(_user.PhoneNumberConfirmed ? "✔" : "❌")</span>
+            <span>موبایل:</span> <span>@_userInfo.PhoneNumber</span>
+            <span>@(_userInfo.PhoneNumberConfirmed ? "✔" : "❌")</span>
         </div>
     </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>type</th>
+                <th>value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _userInfo.Claims)
+            {
+                <tr>
+                    <td>@item.Type</td>
+                    <td>@item.Value</td>
+                </tr>
+            }
+        </tbody>
+        <caption class="caption-top">claims</caption>
+    </table>
 }
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>type</th>
-            <th>value</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in _claims)
-        {
-            <tr>
-                <td>@item.Type</td>
-                <td>@item.Value</td>
-            </tr>
-        }
-    </tbody>
-    <caption class="caption-top">claims</caption>
-</table>
-
 @code {
-    [CascadingParameter]
-    public Task<AuthenticationState>? AuthenticationState { get; set; }
-
-    private IEnumerable<Claim> _claims = [];
-    private AppUser? _user;
+    private ReadCurrentUserInfo.Response? _userInfo;
 
     protected override async Task OnInitializedAsync()
     {
-        var authenticationState = await AuthenticationState!;
-        _user = await UserManager.GetUserAsync(authenticationState.User);
-        _claims = authenticationState.User.Claims;
+        ReadCurrentUserInfo.Request request = new();
+        var response = await Mediator.Send(request);
+        response.Match(
+            r => _userInfo = r,
+            error => throw error.ToException()
+        );
     }
 }

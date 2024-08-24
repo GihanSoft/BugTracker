@@ -20,4 +20,7 @@
     <File Path=".github\workflows\liara.yml" />
   </Folder>
   <Folder Name="/.github/" />
+  <Properties Name="Visual Studio">
+    <Property Name="OpenWith" Value="17" />
+  </Properties>
 </Solution>
