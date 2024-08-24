@@ -4,7 +4,7 @@
 
 @page "/Identity/Users/Create"
 
-@inject UserManager<AppUser> UserManager
+@inject MediatR.IMediator Mediator
 @inject NavigationManager NavigationManager
 
 @attribute [Authorize("sarvar")]
@@ -58,13 +58,9 @@
 
     private async Task OnValidSubmit(EditContext editContext)
     {
-        AppUser user = new()
-            {
-                UserName = InputModel!.UserName,
-                Email = InputModel.Email,
-            };
-
-        var result = await UserManager.CreateAsync(user, InputModel.Password!);
+        CreateUser.Request request = new(InputModel!.UserName!, InputModel.Password!, InputModel.Email!);
+        var response = await Mediator.Send(request);
+        IdentityResult result = response.IfLeft(error => throw error.ToException());
 
         if (result.Succeeded)
         {
