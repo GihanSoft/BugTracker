@@ -10,22 +10,18 @@ namespace BugTracker.Main.Features.Backlog.Mediator;
 
 internal static class CreateProject
 {
-    public record Request(string Key) : IRequest<Either<Error, Response>>;
-    public record Response(IReadOnlyCollection<Response.Project> Projects)
-    {
-        public record Project(ProjectId Id);
-    };
+    public record Request(string Key) : IRequest<Either<Error, LanguageExt.Unit>>;
 
     public class Handler(
         IHttpContextAccessor httpContextAccessor,
         BacklogDbContext _db)
-        : IRequestHandler<Request, Either<Error, Response>>
+        : IRequestHandler<Request, Either<Error, LanguageExt.Unit>>
     {
         private readonly HttpContext _httpContext = httpContextAccessor.HttpContext
             ?? throw new InvalidOperationException();
         private readonly BacklogDbContext _db = _db;
 
-        public async Task<Either<Error, Response>> Handle(Request request, CancellationToken ct)
+        public async Task<Either<Error, LanguageExt.Unit>> Handle(Request request, CancellationToken ct)
         {
             if (_httpContext.User.Identity?.Name is not string username)
             {
@@ -50,10 +46,7 @@ internal static class CreateProject
                 return Error.New(ex);
             }
 
-            return new Response(
-                [
-                    new(project.Id)
-                ]);
+            return unit;
         }
     }
 }

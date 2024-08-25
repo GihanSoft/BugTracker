@@ -45,7 +45,10 @@
             Input.Description ?? "");
 
         var response = await Mediator.Send(request);
-        NavigationManager.NavigateTo($"/Backlog/{OwnerKey}/{ProjectKey}");
+        response.Match(
+            r => NavigationManager.NavigateTo($"/Backlog/{OwnerKey}/{ProjectKey}/{r.Id}"),
+            error => throw error.ToException()
+        );
     }
 
     class FormInput
