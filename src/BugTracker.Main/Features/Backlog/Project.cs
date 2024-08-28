@@ -20,6 +20,7 @@ internal class Project
     public required DateTime CreationMoment { get; set; }
 
     public ICollection<ProductBacklogItem> BacklogItems { get; set; } = [];
+    public ICollection<Tag> Tags { get; set; } = [];
 }
 
 internal class ProjectConfig : IEntityTypeConfiguration<Project>
