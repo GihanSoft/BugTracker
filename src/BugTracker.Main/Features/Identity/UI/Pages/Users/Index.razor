@@ -34,7 +34,7 @@
                     <td>@item.PhoneNumber</td>
                     <td>@(item.PhoneNumberConfirmed ? "✔" : "❌")</td>
                     <td>@item.DisplayName</td>
-                    <td><img src="@item.Avatar" alt="user avatar" /></td>
+                    <td> <Avatar AvatarUrl="@item.Avatar" AvatarAlt="@item.Username" alt="user avatar" /> </td>
                 </tr>
             }
         </tbody>

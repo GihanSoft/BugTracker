@@ -17,12 +17,12 @@ internal static partial class QueryUsers
         public record User(
             string Id,
             string Username,
-            string Email,
+            string? Email,
             bool EmailConfirmed,
-            string PhoneNumber,
+            string? PhoneNumber,
             bool PhoneNumberConfirmed,
-            string DisplayName,
-            string Avatar);
+            string? DisplayName,
+            string? Avatar);
     }
 
     public class Handler(
