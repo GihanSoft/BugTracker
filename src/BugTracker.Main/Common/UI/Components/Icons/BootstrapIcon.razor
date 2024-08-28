@@ -1,0 +1,16 @@
+﻿<svg class="bi" height="@FinalSize" width="@FinalSize" fill="currentColor">
+    <use xlink:href="@KindKey" />
+</svg>
+
+@code {
+    [Parameter, EditorRequired] public BootstrapIconKind Kind { get; set; }
+    [Parameter] public IconSize? Size { get; set; }
+    [Parameter] public int? CustomSize { get; set; }
+
+    private int FinalSize => CustomSize ?? ((int?)Size) ?? 24;
+    private string KindKey => "lib/bootstrap-icons/bootstrap-icons.svg#" + Kind switch
+    {
+        BootstrapIconKind.People => "people",
+        _ => "",
+    };
+}

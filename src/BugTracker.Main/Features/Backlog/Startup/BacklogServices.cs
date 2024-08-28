@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Main.Features.Backlog.Data;
 using EntityFramework.Exceptions.PostgreSQL;
+using BugTracker.Main.Features.Backlog.UI;
+using BugTracker.Main.Common.UI.Layout.Menu;
 
 namespace BugTracker.Main.Features.Backlog.Startup;
 
@@ -10,7 +12,7 @@ internal static class BacklogServices
     public static IServiceCollection AddBacklogService(this IServiceCollection services)
     {
         AddDbContext(services);
-
+        services.AddScoped<IMenuProvider, BacklogMenuProvider>();
         return services;
     }
 

@@ -1,0 +1,19 @@
+﻿@using BugTracker.Main.Common.UI.Layout.Menu
+
+@if (Data is not null)
+{
+    <li class="navbar-item">
+        <NavLink class="nav-link" ActiveClass="active" href="@Data.Url">
+            @if (Data.IconKind.HasValue)
+            {
+                <BootstrapIcon Kind="@Data.IconKind.Value" Size="IconSize.Md" />
+            }
+
+            <span>@Data.Title</span>
+        </NavLink>
+    </li>
+}
+
+@code {
+    [Parameter, EditorRequired] public MenuItemData? Data { get; set; }
+}

@@ -1,31 +1,75 @@
-﻿@using BugTracker.Main.Features.Identity
+﻿@using BugTracker.Main.Common.UI.Layout.Menu
+@using BugTracker.Main.Features.Identity
 @using Microsoft.AspNetCore.Identity
 
 @inject SignInManager<AppUser> SignInManager
 @inject NavigationManager NavigationManager
+@inject IEnumerable<IMenuProvider> MenuProviders
 
 <header>
-    <nav class="navbar">
-        <NavLink class="navbar-brand" Match="NavLinkMatch.All" href="/">باگ بان</NavLink>
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <NavLink class="navbar-brand" Match="NavLinkMatch.All" href="/">باگ بان</NavLink>
 
-        <AuthorizeView>
-            <Authorized>
-                <form @formname="logout" @onsubmit="OnLogoutSubmit" method="post" id="navbar-logout-form">
-                    <AntiforgeryToken />
-                    <button type="submit" class="btn btn-pr">logout</button>
-                </form>
-            </Authorized>
-            <NotAuthorized>
-                <NavLink href="@SignInUrl" class="navbar-item">SignIn</NavLink>
-            </NotAuthorized>
-        </AuthorizeView>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-collapse-content">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-between" id="main-collapse-content">
+                <ul class="navbar-nav">
+                    @foreach (var item in _startMenuItems)
+                    {
+                        <MenuItem Data="item" />
+                    }
+                </ul>
+                <ul class="navbar-nav">
+                    @foreach (var item in _endMenuItems)
+                    {
+                        <MenuItem Data="item" />
+                    }
+                    <AuthorizeView>
+                        <Authorized>
+                            <li class="navbar-item">
+                                <form @formname="logout" @onsubmit="OnLogoutSubmit" method="post" id="navbar-logout-form">
+                                    <AntiforgeryToken />
+                                    <button type="submit" class="nav-link">خروج</button>
+                                </form>
+                            </li>
+                        </Authorized>
+                        <NotAuthorized>
+                            <li class="navbar-item">
+                                <NavLink href="@SignInUrl" class="nav-link" ActiveClass="active">ورود</NavLink>
+                            </li>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </ul>
+            </div>
+        </div>
     </nav>
 </header>
 
 @code {
     private string CurrentPath => NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-    private string? ReturnUrl => CurrentPath is "" or "/" ? null : $"?ReturnUrl={CurrentPath}";
+    private string? ReturnUrl => CurrentPath is "" or "/" or "Identity/SignIn" ? null : $"?ReturnUrl={CurrentPath}";
     private string SignInUrl => "Identity/SignIn" + ReturnUrl;
+
+    private IReadOnlyCollection<MenuItemData> _startMenuItems = [];
+    private IReadOnlyCollection<MenuItemData> _endMenuItems = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var startMenus = await Task.WhenAll(MenuProviders.Select(x => x.GetStartMenuItemsAsync().AsTask()));
+        _startMenuItems = startMenus
+            .SelectMany(identity)
+            .OrderBy(x => x.Order)
+            .ToList();
+
+        var endMenus = await Task.WhenAll(MenuProviders.Select(x => x.GetEndMenuItemsAsync().AsTask()));
+        _endMenuItems = endMenus
+            .SelectMany(identity)
+            .OrderBy(x => x.Order)
+            .ToList();
+    }
 
     async Task OnLogoutSubmit()
     {

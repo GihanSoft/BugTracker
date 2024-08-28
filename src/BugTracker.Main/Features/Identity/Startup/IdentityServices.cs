@@ -1,5 +1,6 @@
-﻿using BugTracker.Main.Features.Identity.Data;
-
+﻿using BugTracker.Main.Common.UI.Layout.Menu;
+using BugTracker.Main.Features.Identity.Data;
+using BugTracker.Main.Features.Identity.UI;
 using GihanSoft.Framework.Web.Bootstrap.Initialization;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -20,7 +21,7 @@ internal static class IdentityServices
         AddAspIdentity(services);
         AddBlazorDependencies(services);
         AddInitializers(services, configuration);
-
+        services.AddScoped<IMenuProvider, IdentityMenuProvider>();
         return services;
     }
 
