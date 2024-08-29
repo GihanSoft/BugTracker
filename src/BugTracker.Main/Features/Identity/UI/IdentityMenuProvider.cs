@@ -1,5 +1,6 @@
 ﻿using BugTracker.Main.Common.UI.Components.Icons;
 using BugTracker.Main.Common.UI.Menu;
+
 using Microsoft.AspNetCore.Authorization;
 
 namespace BugTracker.Main.Features.Identity.UI;
@@ -21,7 +22,7 @@ internal class IdentityMenuProvider : IMenuProvider
 
     private bool IsAuthenticated { get; }
 
-    public ValueTask<IReadOnlyCollection<MenuItemData>> GetEndMenuItemsAsync()
+    public ValueTask<IReadOnlyCollection<MenuItemData>> GetEndMenuItemsAsync(string url)
     {
         List<MenuItemData> items = [];
         if (IsAuthenticated)
@@ -32,7 +33,7 @@ internal class IdentityMenuProvider : IMenuProvider
         return ValueTask.FromResult<IReadOnlyCollection<MenuItemData>>(items.AsReadOnly());
     }
 
-    public async ValueTask<IReadOnlyCollection<MenuItemData>> GetStartMenuItemsAsync()
+    public async ValueTask<IReadOnlyCollection<MenuItemData>> GetStartMenuItemsAsync(string url)
     {
         List<MenuItemData> items = [];
 

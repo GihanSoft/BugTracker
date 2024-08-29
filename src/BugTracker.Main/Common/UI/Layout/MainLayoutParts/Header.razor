@@ -58,13 +58,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var startMenus = await Task.WhenAll(MenuProviders.Select(x => x.GetStartMenuItemsAsync().AsTask()));
+        var currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var startMenus = await Task.WhenAll(MenuProviders.Select(x => x.GetStartMenuItemsAsync(currentUrl).AsTask()));
         _startMenuItems = startMenus
             .SelectMany(identity)
             .OrderBy(x => x.Order)
             .ToList();
 
-        var endMenus = await Task.WhenAll(MenuProviders.Select(x => x.GetEndMenuItemsAsync().AsTask()));
+        var endMenus = await Task.WhenAll(MenuProviders.Select(x => x.GetEndMenuItemsAsync(currentUrl).AsTask()));
         _endMenuItems = endMenus
             .SelectMany(identity)
             .OrderBy(x => x.Order)

@@ -1,4 +1,5 @@
 ﻿using BugTracker.Main.Common.UI.Menu;
+
 using Microsoft.AspNetCore.Authorization;
 
 namespace BugTracker.Main.Features.Backlog.UI;
@@ -20,12 +21,12 @@ internal class BacklogMenuProvider : IMenuProvider
 
     private bool IsAuthenticated { get; }
 
-    public ValueTask<IReadOnlyCollection<MenuItemData>> GetEndMenuItemsAsync()
+    public ValueTask<IReadOnlyCollection<MenuItemData>> GetEndMenuItemsAsync(string url)
     {
         return ValueTask.FromResult<IReadOnlyCollection<MenuItemData>>([]);
     }
 
-    public ValueTask<IReadOnlyCollection<MenuItemData>> GetStartMenuItemsAsync()
+    public ValueTask<IReadOnlyCollection<MenuItemData>> GetStartMenuItemsAsync(string url)
     {
         List<MenuItemData> items = [];
         if (IsAuthenticated)

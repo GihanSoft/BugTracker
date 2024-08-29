@@ -2,6 +2,6 @@
 
 internal interface IMenuProvider
 {
-    ValueTask<IReadOnlyCollection<MenuItemData>> GetStartMenuItemsAsync();
-    ValueTask<IReadOnlyCollection<MenuItemData>> GetEndMenuItemsAsync();
+    ValueTask<IReadOnlyCollection<MenuItemData>> GetStartMenuItemsAsync(string url);
+    ValueTask<IReadOnlyCollection<MenuItemData>> GetEndMenuItemsAsync(string url);
 }
