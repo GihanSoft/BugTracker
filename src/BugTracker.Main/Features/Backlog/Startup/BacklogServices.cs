@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using BugTracker.Main.Features.Backlog.Data;
 using EntityFramework.Exceptions.PostgreSQL;
 using BugTracker.Main.Features.Backlog.UI;
-using BugTracker.Main.Common.UI.Layout.Menu;
+using BugTracker.Main.Common.UI.Menu;
 
 namespace BugTracker.Main.Features.Backlog.Startup;
 

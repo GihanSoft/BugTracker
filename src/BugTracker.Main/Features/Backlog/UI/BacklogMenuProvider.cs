@@ -1,4 +1,4 @@
-﻿using BugTracker.Main.Common.UI.Layout.Menu;
+﻿using BugTracker.Main.Common.UI.Menu;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BugTracker.Main.Features.Backlog.UI;

@@ -1,4 +1,4 @@
-﻿using BugTracker.Main.Common.UI.Layout.Menu;
+﻿using BugTracker.Main.Common.UI.Menu;
 using BugTracker.Main.Features.Identity.Data;
 using BugTracker.Main.Features.Identity.UI;
 using GihanSoft.Framework.Web.Bootstrap.Initialization;

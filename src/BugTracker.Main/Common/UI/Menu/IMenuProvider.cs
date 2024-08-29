@@ -1,4 +1,4 @@
-﻿namespace BugTracker.Main.Common.UI.Layout.Menu;
+﻿namespace BugTracker.Main.Common.UI.Menu;
 
 internal interface IMenuProvider
 {
