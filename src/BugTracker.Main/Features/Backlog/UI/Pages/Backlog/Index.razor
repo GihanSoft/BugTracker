@@ -1,4 +1,6 @@
-﻿@page "/Backlog/{OwnerKey}/{ProjectKey}/{Id?}"
+﻿@page "/_/{OwnerKey}/{ProjectKey}"
+@page "/_/{OwnerKey}/{ProjectKey}/backlog"
+@page "/_/{OwnerKey}/{ProjectKey}/backlog/edit/{Id?}"
 
 @using BugTracker.Main.Features.Backlog
 @using BugTracker.Main.Features.Backlog.Data
@@ -9,7 +11,7 @@
 @inject NavigationManager NavigationManager
 
 <div class="container flex-grow-1 d-flex flex-column gap-2">
-    <NavLink href=@($"/Backlog/{OwnerKey}/{ProjectKey}/PBI/Create") class="btn btn-outline-primary w-25"> جدید </NavLink>
+    <NavLink href=@($"/_/{OwnerKey}/{ProjectKey}/backlog/create-item") class="btn btn-outline-primary w-25"> جدید </NavLink>
 
     @if (_currentItem.IsSome)
     {
@@ -138,7 +140,7 @@
         NavigationManager.NavigateTo(NavigationManager.Uri);
     }
 
-    private string PbiIdToLink(string id) => $"/Backlog/{OwnerKey}/{ProjectKey}/{id}";
+    private string PbiIdToLink(string id) => $"/_/{OwnerKey}/{ProjectKey}/backlog/edit/{id}";
 
     class EditInputModel
     {

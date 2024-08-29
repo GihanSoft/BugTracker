@@ -1,4 +1,4 @@
-﻿@page "/Backlog/Projects/Create"
+﻿@page "/_/{OwnerKey}/create-project"
 
 @using BugTracker.Main.Features.Backlog
 @using BugTracker.Main.Features.Backlog.Data
@@ -30,8 +30,9 @@
 </div>
 
 @code {
-    [SupplyParameterFromForm]
-    private FormModel InputModel { get; set; } = null!;
+    [Parameter] public string? OwnerKey { get; set; }
+
+    [SupplyParameterFromForm] private FormModel InputModel { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,7 +46,7 @@
         CreateProject.Request request = new(InputModel.Key);
         var response = await Mediator.Send(request);
         response.Match(
-            r => NavigationManager.NavigateTo("/Backlog"),
+            r => NavigationManager.NavigateTo($"/_/{OwnerKey}"),
             l =>
             {
                 ValidationMessageStore validationMessageStore = new(editContext);

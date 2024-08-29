@@ -1,4 +1,5 @@
-﻿@page "/Backlog/{OwnerKey}/{ProjectKey}/PBI/Create"
+﻿@page "/_/{OwnerKey}/{ProjectKey}/backlog/create-item"
+
 @using BugTracker.Main.Features.Backlog.Data
 @using Microsoft.EntityFrameworkCore
 
@@ -46,7 +47,7 @@
 
         var response = await Mediator.Send(request);
         response.Match(
-            r => NavigationManager.NavigateTo($"/Backlog/{OwnerKey}/{ProjectKey}/{r.Id}"),
+            r => NavigationManager.NavigateTo($"/_/{OwnerKey}/{ProjectKey}/backlog/edit/{r.Id}"),
             error => throw error.ToException()
         );
     }

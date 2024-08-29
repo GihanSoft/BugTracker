@@ -1,10 +1,11 @@
-﻿@page "/Backlog"
+﻿@page "/_"
+@page "/_/{OwnerKey}"
 
 @using BugTracker.Main.Features.Backlog
 @using BugTracker.Main.Features.Backlog.Data
 @using Microsoft.EntityFrameworkCore
 
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @inject MediatR.IMediator Mediator
 
 <PageTitle>پروژه‌ها</PageTitle>
@@ -13,7 +14,7 @@
     <h3>پروژه‌های من</h3>
 
     <div>
-        <NavLink href="Backlog/Projects/Create" class="btn btn-primary">ایجاد پروژه جدید</NavLink>
+        <NavLink href=@($"_/{OwnerKey}/create-project") class="btn btn-primary">ایجاد پروژه جدید</NavLink>
     </div>
 
     @if (projects is null)
@@ -31,7 +32,7 @@
             {
                 <li>
                     @{
-                        var link = $"/Backlog/{project.OwnerKey}/{project.Key}";
+                        var link = $"/_/{project.OwnerKey}/{project.Key}";
                     }
 
                     <NavLink href="@link" class="btn btn-outline-info w-100">@project.Key</NavLink>
@@ -42,10 +43,21 @@
 </div>
 
 @code {
+    [Parameter] public string? OwnerKey { get; set; }
+
+    [CascadingParameter] public Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
     private IReadOnlyCollection<QueryProjects.Response.Project>? projects;
 
     protected override async Task OnInitializedAsync()
     {
+        if (OwnerKey is null)
+        {
+            var authenticationState = await (AuthenticationStateTask ?? throw new InvalidOperationException());
+            var username = authenticationState.User.Identity?.Name ?? throw new InvalidOperationException();
+            NavigationManager.NavigateTo($"_/{username}");
+        }
+
         QueryProjects.Request request = new();
         var response = await Mediator.Send(request);
         response.Match(

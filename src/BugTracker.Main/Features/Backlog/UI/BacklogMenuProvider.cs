@@ -31,7 +31,8 @@ internal class BacklogMenuProvider : IMenuProvider
         List<MenuItemData> items = [];
         if (IsAuthenticated)
         {
-            items.Add(new MenuItemData("بکلاگ", "/Backlog", null, 0));
+            var username = _httpContext.User.Identity?.Name ?? throw new InvalidOperationException();
+            items.Add(new MenuItemData("پروژه‌ها", $"/_/{username}", null, 0));
         }
 
         return ValueTask.FromResult<IReadOnlyCollection<MenuItemData>>(items.AsReadOnly());

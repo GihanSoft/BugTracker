@@ -14,7 +14,7 @@
             var authState = await AuthenticationStateTask;
             if (authState.User.Identity?.IsAuthenticated == true)
             {
-                NavigationManager.NavigateTo("/Backlog", replace: true);
+                NavigationManager.NavigateTo("/_", replace: true);
             }
         }
     }
