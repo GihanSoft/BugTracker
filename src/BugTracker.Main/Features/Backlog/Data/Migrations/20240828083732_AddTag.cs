@@ -75,11 +75,23 @@ namespace BugTracker.Main.Features.Backlog.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_pbi_tag_tag_id",
+                schema: "backlog",
+                table: "pbi_tag",
+                column: "tag_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_tag_key_project_id",
                 schema: "backlog",
                 table: "tag",
                 columns: new[] { "key", "project_id" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_tag_project_id",
+                schema: "backlog",
+                table: "tag",
+                column: "project_id");
         }
 
         /// <inheritdoc />
