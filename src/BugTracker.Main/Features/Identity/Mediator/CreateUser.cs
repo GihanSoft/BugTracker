@@ -23,19 +23,10 @@ internal static partial class CreateUser
         {
             AppUser user = new();
 
-            var result = await _userManager.SetUserNameAsync(user, request.UserName);
-            if (!result.Succeeded)
-            {
-                return result;
-            }
+            _ = await _userManager.SetUserNameAsync(user, request.UserName);
+            _ = await _userManager.SetEmailAsync(user, request.Email);
 
-            result = await _userManager.SetEmailAsync(user, request.Email);
-            if (!result.Succeeded)
-            {
-                return result;
-            }
-
-            result = await _userManager.CreateAsync(user, request.Password);
+            var result = await _userManager.CreateAsync(user, request.Password);
             return result;
         }
     }
