@@ -14,18 +14,19 @@
     });
   };
 
-  const addConfirmToFormsIfNeeded = () => {
-    /**
-     *
-     * @param {SubmitEvent} e
-     */
-    const onDeleteSubmit = (e) => {
-      if (confirm("از حذف مطمئن هستید؟")) {
-      }
-      else {
-        e.preventDefault();
-      }
+  /**
+   *
+   * @param {SubmitEvent} e
+   */
+  const onDeleteSubmit = (e) => {
+    if (confirm("از حذف مطمئن هستید؟")) {
     }
+    else {
+      e.preventDefault();
+    }
+  }
+
+  const addConfirmToFormsIfNeeded = () => {
 
     document.querySelectorAll("form").forEach(el => {
       el.removeEventListener("submit", onDeleteSubmit);
