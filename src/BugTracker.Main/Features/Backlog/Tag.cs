@@ -28,8 +28,6 @@ internal class TagConfig : IEntityTypeConfiguration<Tag>
     public void Configure(EntityTypeBuilder<Tag> builder)
     {
         builder.ToTable("tag", "backlog");
-        builder.HasIndex([nameof(Tag.Key), nameof(Tag.ProjectId)])
-            .IsUnique(true);
 
         builder.Property(x => x.Id).HasConversion<TagId.EfCoreValueConverter>()
             .UseIdentityAlwaysColumn();
