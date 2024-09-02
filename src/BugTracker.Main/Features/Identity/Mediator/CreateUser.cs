@@ -1,8 +1,6 @@
-﻿
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 using Riok.Mapperly.Abstractions;
 
