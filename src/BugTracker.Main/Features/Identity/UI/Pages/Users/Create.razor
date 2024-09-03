@@ -12,10 +12,18 @@
 <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
     <div class="card">
         <div class="card-body">
-            <EditForm Enhance FormName="SignIn" Model="InputModel" OnValidSubmit="OnValidSubmit" class="d-flex flex-column gap-2">
+            <EditForm Enhance
+                      FormName="SignIn"
+                      Model="InputModel"
+                      enctype="multipart/form-data"
+                      OnValidSubmit="OnValidSubmit"
+                      class="d-flex flex-column gap-2">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
+                <div>
+                    <InputFile name="InputModel.Avatar" class="form-control" />
+                </div>
                 <div>
                     <label>
                         نام کاربری
@@ -56,9 +64,27 @@
         InputModel ??= new();
     }
 
+    private static async Task<string?> GetFileAsUrl(IFormFile formFile)
+    {
+        await using MemoryStream memoryStream = new();
+        await (formFile.CopyToAsync(memoryStream) ?? Task.CompletedTask);
+        var avatarBin = memoryStream.ToArray();
+        var avatarBase64 = Convert.ToBase64String(avatarBin);
+        var avatarUrl = $"data:{formFile.ContentType};base64," + avatarBase64;
+        return avatarUrl;
+    }
+
     private async Task OnValidSubmit(EditContext editContext)
     {
-        CreateUser.Request request = new(InputModel!.UserName!, InputModel.Password!, InputModel.Email!);
+        var avatarUrl = InputModel?.Avatar is not null
+            ? await GetFileAsUrl(InputModel.Avatar)
+            : null;
+
+        CreateUser.Request request = new(
+            InputModel!.UserName!,
+            InputModel.Password!,
+            InputModel.Email!,
+            avatarUrl);
         var response = await Mediator.Send(request);
         IdentityResult result = response.IfLeft(error => throw error.ToException());
 
@@ -75,6 +101,7 @@
 
     class SignInInputModel()
     {
+        public IFormFile? Avatar { get; set; }
         [Required]
         public string? UserName { get; set; }
         [Required]

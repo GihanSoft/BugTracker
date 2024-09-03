@@ -9,7 +9,11 @@ namespace BugTracker.Main.Features.Identity.Mediator;
 [Mapper]
 internal static partial class CreateUser
 {
-    public record Request(string UserName, string Password, string Email) : IRequest<Either<Error, IdentityResult>>;
+    public record Request(
+        string UserName,
+        string Password,
+        string Email,
+        string? Avatar) : IRequest<Either<Error, IdentityResult>>;
 
     public class Handler(
         UserManager<AppUser> _userManager)
@@ -24,6 +28,7 @@ internal static partial class CreateUser
             _ = await _userManager.SetUserNameAsync(user, request.UserName);
             _ = await _userManager.SetEmailAsync(user, request.Email);
 
+            user.Avatar = request.Avatar;
             var result = await _userManager.CreateAsync(user, request.Password);
             return result;
         }
