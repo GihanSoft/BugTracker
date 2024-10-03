@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-
+﻿using BugTracker.Main.Common.Security;
 using BugTracker.Main.Features.Backlog.Data;
 
 using MediatR;
@@ -20,22 +19,16 @@ internal static partial class QueryProjects
     }
 
     public class Handler(
-        IHttpContextAccessor httpContextAccessor,
+        ICurrentUserInfo _currentUserInfo,
         BacklogDbContext _db)
         : IRequestHandler<Request, Either<Error, Response>>
     {
-        private readonly HttpContext _httpContext = httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException();
+        private readonly ICurrentUserInfo _currentUserInfo = _currentUserInfo;
         private readonly BacklogDbContext _db = _db;
 
         public async Task<Either<Error, Response>> Handle(Request request, CancellationToken ct)
         {
-            if (_httpContext.User.Identity?.Name is not string username)
-            {
-                return Error.New(new UnreachableException());
-            }
-
-            var baseQuery = _db.Projects.Where(x => x.OwnerKey == username);
+            var baseQuery = _db.Projects.Where(x => x.OwnerKey == _currentUserInfo.UserKey);
             var projects = await baseQuery
                 .OrderByDescending(x => x.CreationMoment)
                 .Map()
@@ -44,5 +37,5 @@ internal static partial class QueryProjects
         }
     }
 
-    private static partial IQueryable<Response.Project> Map(this IQueryable<Project> project);
+    private static partial IQueryable<Response.Project> Map(this IQueryable<Backlog.Project> project);
 }

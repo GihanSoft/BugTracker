@@ -1,39 +1,32 @@
-﻿using System.Diagnostics;
-
+﻿using BugTracker.Main.Common.Security;
 using BugTracker.Main.Features.Backlog.Data;
 
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace BugTracker.Main.Features.Backlog.Mediator;
+namespace BugTracker.Main.Features.Backlog.Mediator.Project;
 
 internal static class CreateProject
 {
     public record Request(string Key) : IRequest<Either<Error, LanguageExt.Unit>>;
 
     public class Handler(
-        IHttpContextAccessor httpContextAccessor,
-        BacklogDbContext _db)
+        ICurrentUserInfo _currentUserInfo,
+        BacklogDbContext db)
         : IRequestHandler<Request, Either<Error, LanguageExt.Unit>>
     {
-        private readonly HttpContext _httpContext = httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException();
-        private readonly BacklogDbContext _db = _db;
+        private readonly ICurrentUserInfo _currentUserInfo = _currentUserInfo;
+        private readonly BacklogDbContext _db = db;
 
         public async Task<Either<Error, LanguageExt.Unit>> Handle(Request request, CancellationToken ct)
         {
-            if (_httpContext.User.Identity?.Name is not string username)
+            Backlog.Project project = new()
             {
-                return Error.New(new UnreachableException());
-            }
-
-            Project project = new()
-            {
-                OwnerKey = username,
+                OwnerKey = _currentUserInfo.UserKey,
                 Key = request.Key,
 
-                CreationMoment = default!,
+                CreationMoment = default,
             };
 
             await _db.AddAsync(project, ct);

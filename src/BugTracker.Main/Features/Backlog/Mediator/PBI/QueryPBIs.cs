@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-
+﻿using BugTracker.Main.Common.Security;
 using BugTracker.Main.Features.Backlog.Data;
 
 using MediatR;
@@ -20,22 +19,16 @@ internal static partial class QueryPBIs
     }
 
     public class Handler(
-        IHttpContextAccessor httpContextAccessor,
+        ICurrentUserInfo _currentUserInfo,
         BacklogDbContext _db)
         : IRequestHandler<Request, Either<Error, Response>>
     {
-        private readonly HttpContext _httpContext = httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException();
+        private readonly ICurrentUserInfo _currentUserInfo = _currentUserInfo;
         private readonly BacklogDbContext _db = _db;
 
         public async Task<Either<Error, Response>> Handle(Request request, CancellationToken cancellationToken)
         {
-            if (_httpContext.User.Identity?.Name is not string username)
-            {
-                return Error.New(new UnreachableException());
-            }
-
-            var baseQuery = _db.ProductBacklogItems.Where(x => x.Project.OwnerKey == username);
+            var baseQuery = _db.ProductBacklogItems.Where(x => x.Project.OwnerKey == _currentUserInfo.UserKey);
             var pbiList = await baseQuery.Where(x => x.Project.Key == request.ProjectKey)
                 .OrderByDescending(x => x.CreationMoment)
                 .Map()
