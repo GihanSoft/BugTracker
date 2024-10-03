@@ -12,6 +12,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(builder.Configuration.GetSec
 
 builder.Services.AddRazorComponents();
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<IAssemblyMarker>());
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddBacklogService();
 
