@@ -16,6 +16,11 @@ internal class SarvarAccountInitializer(IOptions<SarvarOptions> _sarvarOptions, 
 
     public async Task InitializeAsync()
     {
+        if (_sarvarOptions.SkipInitializer)
+        {
+            return;
+        }
+
         var sarvar = await _userManager.FindByNameAsync("sarvar");
         if (sarvar is null)
         {
@@ -44,6 +49,8 @@ internal class SarvarAccountInitializer(IOptions<SarvarOptions> _sarvarOptions, 
 
 internal class SarvarOptions
 {
+    public required bool SkipInitializer { get; set; }
+
     public required string Password { get; set; }
     public required string Email { get; set; }
 }
