@@ -10,35 +10,38 @@
 @attribute [Authorize("sarvar")]
 
 <div>
-    <table class="table table-striped table-sm">
-        <thead>
-            <tr>
-                <th>شناسه</th>
-                <th>نام کاربری</th>
-                <th>رایانامه</th>
-                <th></th>
-                <th>شماره تماس</th>
-                <th></th>
-                <th>نام نمایشی</th>
-                <th>آواتار</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in _users)
-            {
+    <a href="Identity/Users/Create" data-enhance class="btn btn-primary">جدید</a>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
                 <tr>
-                    <td>@item.Id</td>
-                    <td>@item.Username</td>
-                    <td>@item.Email</td>
-                    <td>@(item.EmailConfirmed ? "✔" : "❌")</td>
-                    <td>@item.PhoneNumber</td>
-                    <td>@(item.PhoneNumberConfirmed ? "✔" : "❌")</td>
-                    <td>@item.DisplayName</td>
-                    <td> <Avatar AvatarUrl="@item.Avatar" AvatarAlt="@item.Username" alt="user avatar" /> </td>
+                    <th>شناسه</th>
+                    <th>نام کاربری</th>
+                    <th>رایانامه</th>
+                    <th></th>
+                    <th>شماره تماس</th>
+                    <th></th>
+                    <th>نام نمایشی</th>
+                    <th>آواتار</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in _users)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Username</td>
+                        <td>@item.Email</td>
+                        <td>@(item.EmailConfirmed ? "✔" : "❌")</td>
+                        <td>@item.PhoneNumber</td>
+                        <td>@(item.PhoneNumberConfirmed ? "✔" : "❌")</td>
+                        <td>@item.DisplayName</td>
+                        <td> <Avatar AvatarUrl="@item.Avatar" AvatarAlt="@item.Username" alt="user avatar" /> </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @code {

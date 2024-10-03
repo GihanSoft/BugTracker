@@ -15,7 +15,12 @@
 
     @if (_currentItem.IsSome)
     {
-        <form data-enhance href=@PbiIdToLink(Id) method="post" @formname="backlog-pbi-delete" @onsubmit="OnDeleteSubmit">
+        <form data-enhance
+              href=@PbiIdToLink(Id)
+              method="post"
+              @formname="backlog-pbi-delete"
+              @onsubmit="OnDeleteSubmit"
+              needs-confirm>
             <AntiforgeryToken />
             <button type="submit" class="btn btn-danger w-25">حذف</button>
         </form>
@@ -42,7 +47,7 @@
         </div>
     }
 
-    <div>
+    <div class="table-responsive">
         <table class="table table-striped table-sm">
             <thead>
                 <tr>

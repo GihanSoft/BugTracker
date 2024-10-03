@@ -10,21 +10,7 @@
 @if (_userInfo is not null)
 {
     <div>
-        @* @if (_userInfo.Avatar is not null)
-    {
-    <div>
-    <img src="@_userInfo.Avatar" class="avatar" />
-    </div>
-    }
-    else
-    {
-    <div class="avatar">
-    <span>@_userInfo.UserName[0]</span>
-    </div>
-    } *@
-
         <Avatar AvatarUrl="@_userInfo.Avatar" AvatarAlt="@_userInfo.UserName" alt="avatar" />
-
         <div>
             <span>نام نمایشی:</span> <span>@_userInfo.DisplayName</span>
         </div>
@@ -41,24 +27,26 @@
         </div>
     </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>type</th>
-                <th>value</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in _userInfo.Claims)
-            {
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
                 <tr>
-                    <td>@item.Type</td>
-                    <td>@item.Value</td>
+                    <th>type</th>
+                    <th>value</th>
                 </tr>
-            }
-        </tbody>
-        <caption class="caption-top">claims</caption>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in _userInfo.Claims)
+                {
+                    <tr>
+                        <td>@item.Type</td>
+                        <td>@item.Value</td>
+                    </tr>
+                }
+            </tbody>
+            <caption class="caption-top">claims</caption>
+        </table>
+    </div>
 }
 
 @code {

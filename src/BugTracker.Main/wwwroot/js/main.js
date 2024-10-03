@@ -11,9 +11,36 @@
       el.style.backgroundColor = bgColors[index];
       el.style.color = '#fff';
       index = (index + 1) % bgColors.length;
-    })
+    });
+  };
+
+  /**
+   *
+   * @param {SubmitEvent} e
+   */
+  const onDeleteSubmit = (e) => {
+    if (confirm("از حذف مطمئن هستید؟")) {
+    }
+    else {
+      e.preventDefault();
+    }
   }
 
-  const observer = new MutationObserver(setAvatarBg);
+  const addConfirmToFormsIfNeeded = () => {
+
+    document.querySelectorAll("form").forEach(el => {
+      el.removeEventListener("submit", onDeleteSubmit);
+      if (el.hasAttribute('needs-confirm')) {
+        el.addEventListener("submit", onDeleteSubmit);
+      }
+    });
+  }
+
+  const domChanged = () => {
+    setAvatarBg();
+    addConfirmToFormsIfNeeded();
+  }
+
+  const observer = new MutationObserver(domChanged);
   observer.observe(document.body, { subtree: true, childList: true });
 }()
