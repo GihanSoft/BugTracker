@@ -9,7 +9,6 @@ using Riok.Mapperly.Abstractions;
 
 namespace BugTracker.Main.Features.Backlog.Mediator;
 
-[Mapper]
 internal static partial class CreatePBI
 {
     public record Request(string ProjectOwner, string ProjectKey, string Title, string Description) : IRequest<Either<Error, Response>>;
@@ -41,23 +40,11 @@ internal static partial class CreatePBI
                 return Error.New("project not found");
             }
 
-            ProductBacklogItem pbi = new()
-            {
-                Project = project,
-                ProjectId = project.Id,
-
-                Title = "",
-                Description = "",
-                CreationMoment = default!,
-            };
-
-            request.Map(pbi);
+            ProductBacklogItem pbi = new(request.Title, request.Description, project);
 
             await _db.AddAsync(pbi, ct);
             await _db.SaveChangesAsync(ct);
             return new Response(pbi.Id);
         }
     }
-
-    private static partial void Map(this Request request, ProductBacklogItem destination);
 }

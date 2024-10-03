@@ -21,25 +21,17 @@ internal static class CreateProject
 
         public async Task<Either<Error, LanguageExt.Unit>> Handle(Request request, CancellationToken ct)
         {
-            Backlog.Project project = new()
-            {
-                OwnerKey = _currentUserInfo.UserKey,
-                Key = request.Key,
-
-                CreationMoment = default,
-            };
-
+            Backlog.Project project = new(_currentUserInfo.UserKey, request.Key);
             await _db.AddAsync(project, ct);
             try
             {
                 await _db.SaveChangesAsync(ct);
+                return unit;
             }
             catch (DbUpdateException ex)
             {
                 return Error.New(ex);
             }
-
-            return unit;
         }
     }
 }

@@ -12,14 +12,21 @@ internal readonly partial struct ProductBacklogItemId { }
 
 internal class ProductBacklogItem
 {
-    public ProductBacklogItemId Id { get; set; }
-    public required string Title { get; set; }
-    public required string Description { get; set; }
+    // used by ef
+    private ProductBacklogItem(ProductBacklogItemId id, string title, string description, DateTime creationMoment)
+        => (Id, Title, Description, CreationMoment, Project) = (id, title, description, creationMoment, null!);
 
-    public required DateTime CreationMoment { get; set; }
+    public ProductBacklogItem(string title, string description, Project project)
+        : this(default, title, description, default)
+        => Project = project;
 
-    public required ProjectId ProjectId { get; set; }
-    public required Project Project { get; set; }
+    public ProductBacklogItemId Id { get; private set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+
+    public DateTime CreationMoment { get; set; }
+
+    public Project Project { get; set; }
 }
 
 internal class ProductBacklogItemConfig : IEntityTypeConfiguration<ProductBacklogItem>
@@ -31,7 +38,6 @@ internal class ProductBacklogItemConfig : IEntityTypeConfiguration<ProductBacklo
         builder.Property(x => x.Id).HasConversion<ProductBacklogItemId.EfCoreValueConverter>()
             .UseIdentityAlwaysColumn();
         builder.Property(x => x.Title).HasMaxLength(1024);
-        builder.Property(x => x.ProjectId).HasConversion<ProjectId.EfCoreValueConverter>();
 
         builder.Property(x => x.CreationMoment)
             .ValueGeneratedOnAdd()
