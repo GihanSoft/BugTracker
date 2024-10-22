@@ -1,5 +1,5 @@
 ﻿using BugTracker.Main.Common.Security;
-using BugTracker.Main.Common.UI.Layout.Menu;
+using BugTracker.Main.Common.UI.Menu;
 using BugTracker.Main.Features.Identity.Data;
 using BugTracker.Main.Features.Identity.Services;
 using BugTracker.Main.Features.Identity.UI;
