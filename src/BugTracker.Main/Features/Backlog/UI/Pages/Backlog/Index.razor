@@ -42,6 +42,18 @@
                         <InputTextArea @bind-Value="EditInput.Description" class="form-control w-100" />
                     </label>
                 </div>
+                <div>
+                    <label class="form-label w-100">
+                        برچسب‌ها:
+                        <mdui-select variant="outlined" clearable multiple name="EditInput.Tags" class="w-100">
+                            @foreach (var item in _tags)
+                            {
+                                var isSelected = EditInput.Tags!.Contains(item.Key);
+                                <mdui-menu-item value="@item.Key" selected=@isSelected>@item.Key</mdui-menu-item>
+                            }
+                        </mdui-select>
+                    </label>
+                </div>
                 <button type="submit" class="btn btn-primary w-25">ذخیره</button>
             </EditForm>
         </div>
@@ -52,6 +64,7 @@
             <thead>
                 <tr>
                     <th>عنوان</th>
+                    <th>برچسب‌ها</th>
                     <th></th>
                 </tr>
             </thead>
@@ -60,6 +73,12 @@
                 {
                     <tr>
                         <td>@item.Title</td>
+                        <td>
+                            @foreach (var tag in item.Tags)
+                            {
+                                <span class="badge text-bg-primary">@tag.Key</span>
+                            }
+                        </td>
                         <td>
                             <NavLink href=@PbiIdToLink(item.Id.ToString()) class="link-primary link-underline-opacity-0">نمایش</NavLink>
                         </td>
@@ -80,6 +99,8 @@
     [SupplyParameterFromForm] private EditInputModel? EditInput { get; set; }
 
     private IReadOnlyCollection<QueryPBIs.Response.PBI> _items = [];
+    private IReadOnlyCollection<QueryTagsOfProject.Response.Tag> _tags = [];
+
     private Option<ReadPBI.Response> _currentItem;
 
     protected override async Task OnInitializedAsync()
@@ -102,6 +123,13 @@
             error => throw error.ToException()
         );
 
+        QueryTagsOfProject.Request tagRequest = new(new ProjectFullKey(OwnerKey, ProjectKey));
+        var tagsResponse = await Mediator.Send(tagRequest);
+        tagsResponse.Match(
+            r => _tags = r.Tags,
+            error => throw error.ToException()
+        );
+
         if (Id is not null)
         {
             var typedId = ProductBacklogItemId.Parse(Id);
@@ -114,17 +142,28 @@
 
             if (EditInput is null)
             {
-                EditInput ??= new();
+                EditInput = new();
                 EditInput.Title = _currentItem.Match(x => x.Title, "");
                 EditInput.Description = _currentItem.Match(x => x.Description, "");
+                EditInput.Tags = _currentItem.Match(x => x.Tags.Select(y => y.Key).ToArray(), []);
+            }
+            else
+            {
+                EditInput.Tags ??= [];
             }
         }
     }
 
     private async Task OnEditValidSubmit()
     {
+        EditInput!.Tags ??= [];
+        var tags = EditInput!.Tags.Select(x => new UpdatePBI.Request.Tag(x)).ToList().AsReadOnly();
         var id = ProductBacklogItemId.Parse(Id!);
-        UpdatePBI.Request request = new(id, EditInput!.Title ?? "", EditInput.Description ?? "");
+        UpdatePBI.Request request = new(
+            id,
+            EditInput!.Title ?? "",
+            EditInput.Description ?? "",
+            tags);
         var response = await Mediator.Send(request);
         response.Match(
             _ => { },
@@ -151,5 +190,6 @@
     {
         public string? Title { get; set; }
         public string? Description { get; set; }
+        public string[]? Tags { get; set; } = [];
     }
 }

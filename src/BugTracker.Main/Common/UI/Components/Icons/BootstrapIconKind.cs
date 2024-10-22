@@ -2,5 +2,7 @@
 
 public enum BootstrapIconKind
 {
-    People,
+    Gear = 0xF3E5,
+    People = 0xF4D0,
+    Trash = 0xF5DE,
 }

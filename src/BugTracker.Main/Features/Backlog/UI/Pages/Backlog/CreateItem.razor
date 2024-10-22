@@ -27,23 +27,61 @@
                 <InputTextArea @bind-Value="Input.Description" class="form-control w-100" />
             </label>
         </div>
+        <div>
+            <label class="form-label w-100">
+                برچسب‌ها:
+                <mdui-select variant="outlined" clearable multiple name="Input.Tags" class="w-100">
+                    @foreach (var item in _tags)
+                    {
+                        <mdui-menu-item value="@item.Key">@item.Key</mdui-menu-item>
+                    }
+                </mdui-select>
+            </label>
+        </div>
         <button type="submit" class="btn btn-primary w-25">ذخیره</button>
     </EditForm>
 </div>
 
 @code {
+    [CascadingParameter] Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
     [Parameter] public string? OwnerKey { get; set; }
     [Parameter] public string? ProjectKey { get; set; }
 
     [SupplyParameterFromForm] private FormInput Input { get; set; } = new();
 
+    private IReadOnlyCollection<QueryTagsOfProject.Response.Tag> _tags = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (OwnerKey is null || ProjectKey is null)
+            return;
+
+        if (AuthenticationStateTask is null)
+            return;
+
+        var authenticationState = await AuthenticationStateTask;
+        var username = authenticationState.User.Identity?.Name;
+        if (username is null || username != OwnerKey)
+            return;
+
+        QueryTagsOfProject.Request tagRequest = new(new ProjectFullKey(OwnerKey, ProjectKey));
+        var tagsResponse = await Mediator.Send(tagRequest);
+        tagsResponse.Match(
+            r => _tags = r.Tags,
+            error => throw error.ToException()
+        );
+    }
+
     private async Task OnValidSubmit(EditContext editContext)
     {
+        var tags = Input.Tags.Select(x => new CreatePBI.Request.Tag(x)).ToList().AsReadOnly();
         CreatePBI.Request request = new(
             OwnerKey ?? "",
             ProjectKey ?? "",
             Input.Title ?? "",
-            Input.Description ?? "");
+            Input.Description ?? "",
+            tags);
 
         var response = await Mediator.Send(request);
         response.Match(
@@ -56,5 +94,6 @@
     {
         public string? Title { get; set; }
         public string? Description { get; set; }
+        public string[] Tags { get; set; } = [];
     }
 }

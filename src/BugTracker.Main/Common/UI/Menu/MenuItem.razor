@@ -1,0 +1,58 @@
+﻿@using BugTracker.Main.Common.UI.Menu
+
+@switch (Data)
+{
+    case LeafMenuItemData leaf:
+
+        <li class="navbar-item">
+            <NavLink class="nav-link" ActiveClass="active" href="@leaf.Url">
+                @if (Data.IconKind.HasValue)
+                {
+                    <BootstrapIcon Kind="@Data.IconKind.Value" Size="IconSize.Md" />
+                }
+
+                <span class="w-1"></span>
+                <span>@Data.Title</span>
+            </NavLink>
+        </li>
+
+        break;
+    case BranchMenuItemData branch:
+
+        <li class="navbar-item dropdown">
+            <NavLink class="nav-link dropdown-toggle" ActiveClass="active" href="javascript:void(0)" data-bs-toggle="dropdown">
+                @if (Data.IconKind.HasValue)
+                {
+                    <BootstrapIcon Kind="@Data.IconKind.Value" Size="IconSize.Md" />
+                }
+
+                <span class="w-1"></span>
+                <span>@Data.Title</span>
+            </NavLink>
+
+            <ul class="dropdown-menu">
+                @foreach (var child in branch.Leaves)
+                {
+                    <li>
+                        <a data-enhance class="dropdown-item" href="@child.Url">
+                            @if (child.IconKind.HasValue)
+                            {
+                                <BootstrapIcon Kind="@child.IconKind.Value" Size="IconSize.Md" />
+                            }
+
+                            <span class="w-1"></span>
+                            <span>@child.Title</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </li>
+
+        break;
+    default:
+        break;
+}
+
+@code {
+    [Parameter, EditorRequired] public MenuItemData? Data { get; set; }
+}

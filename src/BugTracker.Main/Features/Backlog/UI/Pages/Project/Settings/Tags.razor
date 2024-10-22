@@ -1,0 +1,101 @@
+﻿@page "/_/{OwnerKey}/{ProjectKey}/settings/tags"
+
+@using System.ComponentModel.DataAnnotations
+
+@inject MediatR.IMediator Mediator
+@inject NavigationManager NavigationManager
+
+<div class="flex-grow-1">
+    <EditForm Enhance FormName="project-settings-tag-create" Model="FormModel" OnValidSubmit="Create_OnValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label class="form-label w-100">
+                <span>شناسه</span>
+                <InputText @bind-Value="FormModel!.Key" class="form-control w-100" />
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-25">ذخیره</button>
+    </EditForm>
+</div>
+@if (_tags.Count > 0)
+{
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th></th>
+                <th>شناسه</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _tags)
+            {
+                <tr>
+                    <td>
+                        <form data-enhance
+                              method="post"
+                              @formname="@("backlog-pbi-delete" + item.Key)"
+                              @onsubmit="OnDeleteSubmit"
+                              needs-confirm>
+                            <AntiforgeryToken />
+                            <input type="hidden" value="@item.Key" name="FormModel.Key" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <BootstrapIcon Kind="BootstrapIconKind.Trash" />
+                            </button>
+                        </form>
+                    </td>
+                    <td>@item.Key</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public string? OwnerKey { get; set; }
+    [Parameter] public string? ProjectKey { get; set; }
+
+    [SupplyParameterFromForm] public FormModelClass? FormModel { get; set; }
+
+    private IReadOnlyCollection<QueryTagsOfProject.Response.Tag> _tags = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        FormModel ??= new();
+        QueryTagsOfProject.Request request = new(new ProjectFullKey(OwnerKey!, ProjectKey!));
+        var response = await Mediator.Send(request);
+        response.Match(
+            r => _tags = r.Tags,
+            error => throw error.ToException()
+        );
+    }
+
+    private async Task Create_OnValidSubmit(EditContext editContext)
+    {
+        CreateTag.Request request = new(new ProjectFullKey(OwnerKey!, ProjectKey!), FormModel!.Key!);
+        var response = await Mediator.Send(request);
+        response.Match(
+            r => NavigationManager.NavigateTo(NavigationManager.Uri),
+            error => throw error.ToException()
+        );
+    }
+
+    private async Task OnDeleteSubmit()
+    {
+        DeleteTag.Request request = new(new ProjectFullKey(OwnerKey!, ProjectKey!), FormModel!.Key!);
+        var response = await Mediator.Send(request);
+        response.Match(
+            r => NavigationManager.NavigateTo(NavigationManager.Uri),
+            error => throw error.ToException()
+        );
+    }
+
+    public class FormModelClass
+    {
+        [Required]
+        [StringLength(256)]
+        public string? Key { get; set; }
+    }
+}

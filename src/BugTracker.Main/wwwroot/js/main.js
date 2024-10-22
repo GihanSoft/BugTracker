@@ -39,8 +39,22 @@
   const domChanged = () => {
     setAvatarBg();
     addConfirmToFormsIfNeeded();
+    document.querySelectorAll('mdui-select[multiple]').forEach(select => {
+      const selected = [];
+      for (var i = 0; i < select.children.length; i++) {
+        var option = select.children[i];
+        if (option.selected) {
+          selected.push(option.value);
+        }
+      }
+
+      select.value = selected;
+    });
   }
 
   const observer = new MutationObserver(domChanged);
-  observer.observe(document.body, { subtree: true, childList: true });
+  observer.observe(document.body, { subtree: true, childList: true, attributes: true });
+
+  mdui.loadLocale((locale) => import(`/lib/mdui/${locale}.min.js`));
+  mdui.setLocale('fa-ir');
 }()

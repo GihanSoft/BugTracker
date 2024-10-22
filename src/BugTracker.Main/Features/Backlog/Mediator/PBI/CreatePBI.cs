@@ -1,17 +1,27 @@
-﻿using BugTracker.Main.Common.Security;
+﻿using System.Collections.Immutable;
+
+using BugTracker.Main.Common.Security;
 using BugTracker.Main.Features.Backlog.Data;
 
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-using Riok.Mapperly.Abstractions;
-
 namespace BugTracker.Main.Features.Backlog.Mediator;
 
 internal static partial class CreatePBI
 {
-    public record Request(string ProjectOwner, string ProjectKey, string Title, string Description) : IRequest<Either<Error, Response>>;
+    public record Request(
+        string ProjectOwner,
+        string ProjectKey,
+        string Title,
+        string Description,
+        IReadOnlyCollection<Request.Tag> Tags)
+        : IRequest<Either<Error, Response>>
+    {
+        public sealed record Tag(string Key);
+    }
+
     public record Response(ProductBacklogItemId Id);
 
     public class Handler(
@@ -31,6 +41,7 @@ internal static partial class CreatePBI
 
             var project = await _db.Projects
                 .AsTracking()
+                .Include(x => x.Tags)
                 .FirstOrDefaultAsync(
                     x => x.OwnerKey == request.ProjectOwner && x.Key == request.ProjectKey,
                     ct);
@@ -41,6 +52,14 @@ internal static partial class CreatePBI
             }
 
             ProductBacklogItem pbi = new(request.Title, request.Description, project);
+            pbi.Tags = request.Tags.Select(x => new PbiTag
+            {
+                CreationMoment = default,
+                PbiId = default,
+                Pbi = default!,
+                TagId = default,
+                Tag = project.Tags.First(projectTag => projectTag.Key == x.Key),
+            }).ToImmutableList();
 
             await _db.AddAsync(pbi, ct);
             await _db.SaveChangesAsync(ct);

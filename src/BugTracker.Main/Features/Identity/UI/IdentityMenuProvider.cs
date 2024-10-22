@@ -27,7 +27,7 @@ internal class IdentityMenuProvider : IMenuProvider
         List<MenuItemData> items = [];
         if (IsAuthenticated)
         {
-            items.Add(new MenuItemData("اطلاعات", "/Identity/Info", null, 0));
+            items.Add(new LeafMenuItemData("اطلاعات", null, 0, "/Identity/Info"));
         }
 
         return ValueTask.FromResult<IReadOnlyCollection<MenuItemData>>(items.AsReadOnly());
@@ -40,7 +40,7 @@ internal class IdentityMenuProvider : IMenuProvider
         var isSarvar = await _authorizationService.AuthorizeAsync(_httpContext.User, "sarvar");
         if (isSarvar.Succeeded)
         {
-            items.Add(new MenuItemData("کاربران", "/Identity/Users", BootstrapIconKind.People, -1));
+            items.Add(new LeafMenuItemData("کاربران", BootstrapIconKind.People, -1, "/Identity/Users"));
         }
 
         return items.AsReadOnly();

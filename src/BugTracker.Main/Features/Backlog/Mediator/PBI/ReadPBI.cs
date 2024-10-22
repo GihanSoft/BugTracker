@@ -10,7 +10,10 @@ namespace BugTracker.Main.Features.Backlog.Mediator.PBI;
 internal static class ReadPBI
 {
     public record Request(ProductBacklogItemId Id) : IRequest<Either<Error, Response>>;
-    public record Response(string Title, string Description);
+    public record Response(string Title, string Description, IReadOnlyCollection<Response.Tag> Tags)
+    {
+        public sealed record Tag(string Key);
+    }
 
     public class Handler(
         ICurrentUserInfo _currentUserInfo,
@@ -22,13 +25,17 @@ internal static class ReadPBI
 
         public async Task<Either<Error, Response>> Handle(Request request, CancellationToken cancellationToken)
         {
-            var pbi = await _db.ProductBacklogItems.Include(x => x.Project).FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            var pbi = await _db.ProductBacklogItems
+                .Include(x => x.Project)
+                .Include(x => x.Tags).ThenInclude(x => x.Tag)
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (pbi?.Project.OwnerKey != _currentUserInfo.UserKey)
             {
                 return Error.New("access denied");
             }
 
-            return new Response(pbi.Title, pbi.Description);
+            var tags = pbi.Tags.Select(x => new Response.Tag(x.Tag.Key)).ToList().AsReadOnly();
+            return new Response(pbi.Title, pbi.Description, tags);
         }
     }
 }
