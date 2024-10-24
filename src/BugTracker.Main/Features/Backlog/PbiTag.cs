@@ -1,5 +1,4 @@
 ﻿using BugTracker.Main.Common.Ef.ValueGenerators;
-using BugTracker.Main.Features.Backlog.Data.Migrations;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -8,7 +7,7 @@ namespace BugTracker.Main.Features.Backlog;
 
 internal class PbiTag
 {
-    private PbiTag(DateTime creationMoment) => (CreationMoment, Pbi, Tag) = (creationMoment, null!, null!);
+    private PbiTag() => (CreationMoment, Pbi, Tag) = (default, null!, null!);
 
     public DateTime CreationMoment { get; private set; }
 
