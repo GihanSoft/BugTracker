@@ -1,7 +1,4 @@
-﻿
-using System.Diagnostics;
-
-using BugTracker.Main.Common.Security;
+﻿using BugTracker.Main.Common.Security;
 using BugTracker.Main.Features.Backlog.Data;
 
 using MediatR;
@@ -43,15 +40,7 @@ internal static class CreateTag
                 return Error.New("project not found");
             }
 
-            project.Tags.Add(new Backlog.Tag
-            {
-                Project = project,
-                ProjectId = project.Id,
-
-                Key = request.TagKey,
-
-                CreationMoment = default,
-            });
+            project.Tags.Add(new Backlog.Tag(request.TagKey));
 
             await _db.SaveChangesAsync(cancellationToken);
             return unit;

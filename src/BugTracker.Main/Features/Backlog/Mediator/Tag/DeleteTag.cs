@@ -29,7 +29,7 @@ internal class DeleteTag
                 return Error.New("access denied");
             }
 
-            var tag = await _db.Tags.Include(x => x.Tags).FirstOrDefaultAsync(x =>
+            var tag = await _db.Tags.Include(x => x.PBIs).FirstOrDefaultAsync(x =>
                 x.Key == request.TagKey &&
                 x.Project.OwnerKey == request.ProjectFullKey.OwnerKey &&
                 x.Project.Key == request.ProjectFullKey.ProjectKey, cancellationToken);
@@ -39,7 +39,7 @@ internal class DeleteTag
                 return Error.New("tag not found");
             }
 
-            if (tag.Tags.Count > 0)
+            if (tag.PBIs.Count > 0)
             {
                 return Error.New("tag is used");
             }

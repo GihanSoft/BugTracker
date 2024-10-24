@@ -1,6 +1,7 @@
 ﻿using BugTracker.Main.Common.Ef.ValueGenerators;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using StronglyTypedIds;
 
@@ -9,18 +10,23 @@ namespace BugTracker.Main.Features.Backlog;
 [StronglyTypedId("gs-long", "gs-long-ef")]
 internal readonly partial struct TagId { }
 
-internal class Tag
+internal sealed class Tag
 {
-    public TagId Id { get; set; }
+    // used by ef
+    private Tag(TagId id, string key, DateTime creationMoment)
+        => (Id, Key, CreationMoment, Project) = (id, key, creationMoment, null!);
 
-    public required string Key { get; set; }
+    public Tag(string key) : this(default, key, default) { }
 
-    public required DateTime CreationMoment { get; set; }
+    public TagId Id { get; private set; }
 
-    public required ProjectId ProjectId { get; set; }
-    public required Project Project { get; set; }
+    public string Key { get; private set; }
 
-    public ICollection<PbiTag> Tags { get; set; } = [];
+    public DateTime CreationMoment { get; private set; }
+
+    public Project Project { get; private set; }
+
+    public ICollection<ProductBacklogItem> PBIs { get; private set; } = [];
 }
 
 internal class TagConfig : IEntityTypeConfiguration<Tag>
@@ -33,11 +39,15 @@ internal class TagConfig : IEntityTypeConfiguration<Tag>
             .UseIdentityAlwaysColumn();
 
         builder.Property(x => x.Key).HasMaxLength(256);
-        builder.Property(x => x.ProjectId).HasConversion<ProjectId.EfCoreValueConverter>();
 
         builder.Property(x => x.CreationMoment)
             .ValueGeneratedOnAdd()
             .HasValueGenerator<UtcNowDateTimeValueGenerator>();
+
+        builder
+            .HasMany(x => x.PBIs)
+            .WithMany(x => x.Tags)
+            .UsingEntity<PbiTag>();
     }
 }
 

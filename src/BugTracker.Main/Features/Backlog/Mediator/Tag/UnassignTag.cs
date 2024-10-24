@@ -3,13 +3,11 @@ using BugTracker.Main.Features.Backlog.Data;
 
 using MediatR;
 
-using Microsoft.EntityFrameworkCore;
-
 namespace BugTracker.Main.Features.Backlog.Mediator.Tag;
 
 internal class UnassignTag
 {
-    public sealed record Request(TagFullKey TagFullKey, ProductBacklogItemId BacklogItemId) : IRequest<Either<Error, LanguageExt.Unit>>;
+    public sealed record Request(string TagKey, ProductBacklogItemId BacklogItemId) : IRequest<Either<Error, LanguageExt.Unit>>;
 
     public sealed class Handler : IRequestHandler<Request, Either<Error, LanguageExt.Unit>>
     {
@@ -24,24 +22,27 @@ internal class UnassignTag
 
         public async Task<Either<Error, LanguageExt.Unit>> Handle(Request request, CancellationToken cancellationToken)
         {
-            if (request.TagFullKey.ProjectFullKey.OwnerKey != _currentUserInfo.UserKey)
+            var pbi = await _db.ProductBacklogItems.FindAsync([request.BacklogItemId], cancellationToken);
+            if (pbi is null)
+            {
+                return Error.New("PBI not found");
+            }
+
+            var pbiEntry = _db.Entry(pbi);
+            await pbiEntry.Reference(x => x.Project).LoadAsync(cancellationToken);
+
+            if (pbi.Project.OwnerKey != _currentUserInfo.UserKey)
             {
                 return Error.New("access denied");
             }
 
-            var pbiTag = await _db.PbiTags.FirstOrDefaultAsync(x =>
-                x.Tag.Key == request.TagFullKey.TagKey &&
-                x.Tag.Project.OwnerKey == request.TagFullKey.ProjectFullKey.OwnerKey &&
-                x.Tag.Project.Key == request.TagFullKey.ProjectFullKey.ProjectKey &&
-                x.PbiId == request.BacklogItemId, cancellationToken);
-
-            if (pbiTag is null)
+            await pbiEntry.Collection(x => x.Tags).LoadAsync(cancellationToken);
+            if (pbi.Tags.FirstOrDefault(x => x.Key == request.TagKey) is Backlog.Tag tag)
             {
-                return Error.New("tag not found");
+                pbi.Tags.Remove(tag);
+                await _db.SaveChangesAsync(cancellationToken);
             }
 
-            _db.Remove(pbiTag);
-            await _db.SaveChangesAsync(cancellationToken);
             return unit;
         }
     }

@@ -1,26 +1,19 @@
 ﻿using BugTracker.Main.Common.Ef.ValueGenerators;
+using BugTracker.Main.Features.Backlog.Data.Migrations;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using StronglyTypedIds;
-
 namespace BugTracker.Main.Features.Backlog;
-
-[StronglyTypedId("gs-long", "gs-long-ef")]
-internal readonly partial struct PbiTagId { }
 
 internal class PbiTag
 {
-    public PbiTagId Id { get; set; }
+    private PbiTag(DateTime creationMoment) => (CreationMoment, Pbi, Tag) = (creationMoment, null!, null!);
 
-    public required DateTime CreationMoment { get; set; }
+    public DateTime CreationMoment { get; private set; }
 
-    public required ProductBacklogItemId PbiId { get; set; }
-    public required ProductBacklogItem Pbi { get; set; }
-
-    public required TagId TagId { get; set; }
-    public required Tag Tag { get; set; }
+    public ProductBacklogItem Pbi { get; private set; }
+    public Tag Tag { get; private set; }
 }
 
 internal class PbiTagConfig : IEntityTypeConfiguration<PbiTag>
@@ -28,11 +21,8 @@ internal class PbiTagConfig : IEntityTypeConfiguration<PbiTag>
     public void Configure(EntityTypeBuilder<PbiTag> builder)
     {
         builder.ToTable("pbi_tag", "backlog");
-        builder.HasIndex([nameof(PbiTag.PbiId), nameof(PbiTag.TagId)])
-            .IsUnique(true);
 
-        builder.Property(x => x.Id).HasConversion<PbiTagId.EfCoreValueConverter>()
-            .UseIdentityAlwaysColumn();
+        builder.Property<long>("Id").UseIdentityAlwaysColumn();
 
         builder.Property(x => x.CreationMoment)
             .ValueGeneratedOnAdd()

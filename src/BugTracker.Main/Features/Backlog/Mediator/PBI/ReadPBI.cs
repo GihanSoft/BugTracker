@@ -27,14 +27,14 @@ internal static class ReadPBI
         {
             var pbi = await _db.ProductBacklogItems
                 .Include(x => x.Project)
-                .Include(x => x.Tags).ThenInclude(x => x.Tag)
+                .Include(x => x.Tags)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (pbi?.Project.OwnerKey != _currentUserInfo.UserKey)
             {
                 return Error.New("access denied");
             }
 
-            var tags = pbi.Tags.Select(x => new Response.Tag(x.Tag.Key)).ToList().AsReadOnly();
+            var tags = pbi.Tags.Select(x => new Response.Tag(x.Key)).ToList().AsReadOnly();
             return new Response(pbi.Title, pbi.Description, tags);
         }
     }

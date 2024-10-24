@@ -16,19 +16,19 @@ internal class ProductBacklogItem
     private ProductBacklogItem(ProductBacklogItemId id, string title, string description, DateTime creationMoment)
         => (Id, Title, Description, CreationMoment, Project) = (id, title, description, creationMoment, null!);
 
-    public ProductBacklogItem(string title, string description, Project project)
-        : this(default, title, description, default)
-        => Project = project;
+    public ProductBacklogItem(string title, string description)
+        : this(default, title, description, default) { }
 
     public ProductBacklogItemId Id { get; private set; }
+
     public string Title { get; set; }
     public string Description { get; set; }
 
-    public DateTime CreationMoment { get; set; }
+    public DateTime CreationMoment { get; private set; }
 
-    public Project Project { get; set; }
+    public Project Project { get; private set; }
 
-    public ICollection<PbiTag> Tags { get; set; } = [];
+    public ICollection<Tag> Tags { get; private set; } = [];
 }
 
 internal class ProductBacklogItemConfig : IEntityTypeConfiguration<ProductBacklogItem>
@@ -44,5 +44,10 @@ internal class ProductBacklogItemConfig : IEntityTypeConfiguration<ProductBacklo
         builder.Property(x => x.CreationMoment)
             .ValueGeneratedOnAdd()
             .HasValueGenerator<UtcNowDateTimeValueGenerator>();
+
+        builder
+            .HasMany(x => x.Tags)
+            .WithMany(x => x.PBIs)
+            .UsingEntity<PbiTag>();
     }
 }

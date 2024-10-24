@@ -51,17 +51,21 @@ internal static partial class CreatePBI
                 return Error.New("project not found");
             }
 
-            ProductBacklogItem pbi = new(request.Title, request.Description, project);
-            pbi.Tags = request.Tags.Select(x => new PbiTag
-            {
-                CreationMoment = default,
-                PbiId = default,
-                Pbi = default!,
-                TagId = default,
-                Tag = project.Tags.First(projectTag => projectTag.Key == x.Key),
-            }).ToImmutableList();
+            ProductBacklogItem pbi = new(request.Title, request.Description);
 
-            await _db.AddAsync(pbi, ct);
+            var projectTags = project.Tags.ToDictionary(x => x.Key);
+            foreach (var item in request.Tags)
+            {
+                var found = projectTags.TryGetValue(item.Key, out var tag);
+                if (!found)
+                {
+                    return Error.New($"برچسب {item.Key} پیدا نشد");
+                }
+
+                pbi.Tags.Add(tag!);
+            }
+
+            project.BacklogItems.Add(pbi);
             await _db.SaveChangesAsync(ct);
             return new Response(pbi.Id);
         }

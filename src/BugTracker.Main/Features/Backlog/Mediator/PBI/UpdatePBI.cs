@@ -30,7 +30,7 @@ internal static class UpdatePBI
         {
             var pbi = await _db.ProductBacklogItems
                 .AsTracking()
-                .Include(x => x.Tags).ThenInclude(x => x.Tag)
+                .Include(x => x.Tags)
                 .Include(x => x.Project).ThenInclude(x => x.Tags)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (pbi?.Project.OwnerKey != _currentUserInfo.UserKey)
@@ -41,27 +41,18 @@ internal static class UpdatePBI
             pbi.Title = request.Title;
             pbi.Description = request.Description;
 
-            var toDelete = pbi.Tags.Select(x => x.Tag.Key).Except(request.Tags.Select(x => x.Key)).ToList();
+            var toDelete = pbi.Tags.Select(x => x.Key).Except(request.Tags.Select(x => x.Key)).ToList();
             foreach (var item in toDelete)
             {
-                var m = pbi.Tags.First(x => x.Tag.Key == item);
+                var m = pbi.Tags.First(x => x.Key == item);
                 pbi.Tags.Remove(m);
             }
 
-            var toAdd = request.Tags.Select(x => x.Key).Except(pbi.Tags.Select(x => x.Tag.Key)).ToList();
+            var toAdd = request.Tags.Select(x => x.Key).Except(pbi.Tags.Select(x => x.Key)).ToList();
             foreach (var item in toAdd)
             {
                 var tag = pbi.Project.Tags.First(x => x.Key == item);
-                Backlog.PbiTag pbiTag = new()
-                {
-                    CreationMoment = default,
-
-                    TagId = default,
-                    Tag = tag,
-                    PbiId = pbi.Id,
-                    Pbi = pbi,
-                };
-                pbi.Tags.Add(pbiTag);
+                pbi.Tags.Add(tag);
             }
 
             await _db.SaveChangesAsync(cancellationToken);

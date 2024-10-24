@@ -9,7 +9,7 @@ namespace BugTracker.Main.Features.Backlog.Mediator.Tag;
 
 internal class AssignTag
 {
-    public sealed record Request(TagFullKey TagFullKey, ProductBacklogItemId BacklogItemId) : IRequest<Either<Error, LanguageExt.Unit>>;
+    public sealed record Request(string TagKey, ProductBacklogItemId BacklogItemId) : IRequest<Either<Error, LanguageExt.Unit>>;
 
     public sealed class Handler : IRequestHandler<Request, Either<Error, LanguageExt.Unit>>
     {
@@ -24,33 +24,28 @@ internal class AssignTag
 
         public async Task<Either<Error, LanguageExt.Unit>> Handle(Request request, CancellationToken cancellationToken)
         {
-            if (request.TagFullKey.ProjectFullKey.OwnerKey != _currentUserInfo.UserKey)
+            var pbi = await _db.ProductBacklogItems.FindAsync([request.BacklogItemId], cancellationToken);
+            if (pbi is null)
+            {
+                return Error.New("PBI not found");
+            }
+
+            await _db.Entry(pbi).Reference(x => x.Project).LoadAsync(cancellationToken);
+            await _db.Entry(pbi.Project).Collection(x => x.Tags).LoadAsync(cancellationToken);
+
+            if (pbi.Project.OwnerKey != _currentUserInfo.UserKey)
             {
                 return Error.New("access denied");
             }
 
-            var tag = await _db.Tags.AsTracking().FirstOrDefaultAsync(x =>
-                x.Key == request.TagFullKey.TagKey &&
-                x.Project.OwnerKey == request.TagFullKey.ProjectFullKey.OwnerKey &&
-                x.Project.Key == request.TagFullKey.ProjectFullKey.ProjectKey, cancellationToken);
+            var tag = pbi.Project.Tags.FirstOrDefault(x => x.Key == request.TagKey);
 
             if (tag is null)
             {
                 return Error.New("tag not found");
             }
 
-            PbiTag pbiTag = new()
-            {
-                PbiId = request.BacklogItemId,
-                Pbi = null!,
-
-                TagId = tag.Id,
-                Tag = tag,
-
-                CreationMoment = default,
-            };
-
-            tag.Tags.Add(pbiTag);
+            pbi.Tags.Add(tag);
 
             await _db.SaveChangesAsync(cancellationToken);
             return unit;
