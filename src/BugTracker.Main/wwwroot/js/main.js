@@ -55,6 +55,6 @@
   const observer = new MutationObserver(domChanged);
   observer.observe(document.body, { subtree: true, childList: true, attributes: true });
 
-  mdui.loadLocale((locale) => import(`/lib/mdui/${locale}.min.js`));
+  mdui.loadLocale((locale) => import(`/lib/mdui/locales/${locale}.min.js`));
   mdui.setLocale('fa-ir');
 }()
