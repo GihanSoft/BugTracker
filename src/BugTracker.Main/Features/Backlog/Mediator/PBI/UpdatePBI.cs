@@ -38,22 +38,15 @@ internal static class UpdatePBI
                 return Error.New("access denied");
             }
 
-            pbi.Title = request.Title;
-            pbi.Description = request.Description;
-
-            var toDelete = pbi.Tags.Select(x => x.Key).Except(request.Tags.Select(x => x.Key)).ToList();
-            foreach (var item in toDelete)
+            ProductBacklogItem newPbi = pbi with
             {
-                var m = pbi.Tags.First(x => x.Key == item);
-                pbi.Tags.Remove(m);
-            }
+                Title = request.Title,
+                Description = request.Description,
+            };
 
-            var toAdd = request.Tags.Select(x => x.Key).Except(pbi.Tags.Select(x => x.Key)).ToList();
-            foreach (var item in toAdd)
-            {
-                var tag = pbi.Project.Tags.First(x => x.Key == item);
-                pbi.Tags.Add(tag);
-            }
+            _db.Entry(pbi).CurrentValues.SetValues(newPbi);
+            var currentTags = pbi.Project.Tags.Where(x => request.Tags.Any(y => y.Key == x.Key)).ToList();
+            _db.Entry(pbi).Collection(x => x.Tags).CurrentValue = currentTags;
 
             await _db.SaveChangesAsync(cancellationToken);
 

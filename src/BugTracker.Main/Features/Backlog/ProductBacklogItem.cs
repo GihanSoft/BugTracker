@@ -10,7 +10,7 @@ namespace BugTracker.Main.Features.Backlog;
 [StronglyTypedId("gs-long", "gs-long-ef")]
 internal readonly partial struct ProductBacklogItemId { }
 
-internal class ProductBacklogItem
+internal sealed record ProductBacklogItem
 {
     // used by ef
     private ProductBacklogItem(ProductBacklogItemId id, string title, string description, DateTime creationMoment)
@@ -19,16 +19,16 @@ internal class ProductBacklogItem
     public ProductBacklogItem(string title, string description)
         : this(default, title, description, default) { }
 
-    public ProductBacklogItemId Id { get; private set; }
+    public ProductBacklogItemId Id { get; private init; }
 
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public string Title { get; init; }
+    public string Description { get; init; }
 
-    public DateTime CreationMoment { get; private set; }
+    public DateTime CreationMoment { get; private init; }
 
-    public Project Project { get; private set; }
+    public Project Project { get; private init; }
 
-    public ICollection<Tag> Tags { get; private set; } = [];
+    public ICollection<Tag> Tags { get; init; } = [];
 }
 
 internal class ProductBacklogItemConfig : IEntityTypeConfiguration<ProductBacklogItem>

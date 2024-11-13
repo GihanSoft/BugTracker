@@ -10,7 +10,7 @@ namespace BugTracker.Main.Features.Backlog;
 [StronglyTypedId("gs-long", "gs-long-ef")]
 internal readonly partial struct TagId { }
 
-internal sealed class Tag
+internal sealed record Tag
 {
     // used by ef
     private Tag(TagId id, string key, DateTime creationMoment)
@@ -18,15 +18,15 @@ internal sealed class Tag
 
     public Tag(string key) : this(default, key, default) { }
 
-    public TagId Id { get; private set; }
+    public TagId Id { get; private init; }
 
-    public string Key { get; private set; }
+    public string Key { get; private init; }
 
-    public DateTime CreationMoment { get; private set; }
+    public DateTime CreationMoment { get; private init; }
 
-    public Project Project { get; private set; }
+    public Project Project { get; private init; }
 
-    public ICollection<ProductBacklogItem> PBIs { get; private set; } = [];
+    public ICollection<ProductBacklogItem> PBIs { get; init; } = [];
 }
 
 internal class TagConfig : IEntityTypeConfiguration<Tag>
