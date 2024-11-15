@@ -1,4 +1,4 @@
-﻿@page "/_/{OwnerKey}/{ProjectKey}"
+@page "/_/{OwnerKey}/{ProjectKey}"
 @page "/_/{OwnerKey}/{ProjectKey}/backlog"
 @page "/_/{OwnerKey}/{ProjectKey}/backlog/edit/{Id?}"
 
@@ -11,20 +11,27 @@
 @inject NavigationManager NavigationManager
 
 <div class="container flex-grow-1 d-flex flex-column gap-2">
-    <NavLink href=@($"/_/{OwnerKey}/{ProjectKey}/backlog/create-item") class="btn btn-outline-primary w-25"> جدید </NavLink>
+    <div class="btn-group">
+        <NavLink href=@($"/_/{OwnerKey}/{ProjectKey}/backlog/create-item") class="btn btn-outline-primary w-25"> جدید </NavLink>
+        @if (_currentItem.IsSome)
+        {
+            <form data-enhance
+                  href=@PbiIdToLink(Id)
+                  method="post"
+                  id="backlog-pbi-delete"
+                  @formname="backlog-pbi-delete"
+                  @onsubmit="OnDeleteSubmit"
+                  needs-confirm
+                  class="d-none">
+                <AntiforgeryToken />
+            </form>
+            <button form="backlog-pbi-delete" type="submit" class="btn btn-danger w-25">حذف</button>
+        }
+    </div>
 
     @if (_currentItem.IsSome)
     {
-        <form data-enhance
-              href=@PbiIdToLink(Id)
-              method="post"
-              @formname="backlog-pbi-delete"
-              @onsubmit="OnDeleteSubmit"
-              needs-confirm>
-            <AntiforgeryToken />
-            <button type="submit" class="btn btn-danger w-25">حذف</button>
-        </form>
-        <div class="flex-grow-1">
+        <div class="card shadow flex-grow-1 p-3">
             <EditForm Enhance
                       Model="EditInput"
                       FormName="backlog-pbi-edit"
@@ -59,33 +66,60 @@
         </div>
     }
 
-    <div class="table-responsive">
-        <table class="table table-striped table-sm">
-            <thead>
-                <tr>
-                    <th>عنوان</th>
-                    <th>برچسب‌ها</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in _items)
-                {
+    <div class="card shadow">
+        <div class="card px-3">
+            <form data-enhance form-name="backlog-filter" class="d-flex align-items-center gap-3">
+                <label class="col-form-label d-flex align-items-center flex-grow-1 flex-shrink-1 gap-2">
+                    <span class="text-nowrap">فقط شامل:</span>
+                    <mdui-select variant="outlined" clearable multiple name="Include" `>
+                        @foreach (var item in _tags)
+                        {
+                            var isSelected = Include?.Contains(item.Key) ?? false;
+                            <mdui-menu-item value="@item.Key" selected=@isSelected>@item.Key</mdui-menu-item>
+                        }
+                    </mdui-select>
+                </label>
+                <label class="col-form-label d-flex align-items-center flex-grow-1 flex-shrink-1 gap-2">
+                    <span class="text-nowrap">بدون:</span>
+                    <mdui-select variant="outlined" clearable multiple name="Exclude">
+                        @foreach (var item in _tags)
+                        {
+                            var isSelected = Exclude?.Contains(item.Key) ?? false;
+                            <mdui-menu-item value="@item.Key" selected=@isSelected>@item.Key</mdui-menu-item>
+                        }
+                    </mdui-select>
+                </label>
+                <button type="submit" class="btn btn-outline-primary btn-lg px-5">فیلتر</button>
+            </form>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
                     <tr>
-                        <td>@item.Title</td>
-                        <td>
-                            @foreach (var tag in item.Tags)
-                            {
-                                <span class="badge text-bg-primary">@tag.Key</span>
-                            }
-                        </td>
-                        <td>
-                            <NavLink href=@PbiIdToLink(item.Id.ToString()) class="link-primary link-underline-opacity-0">نمایش</NavLink>
-                        </td>
+                        <th>عنوان</th>
+                        <th>برچسب‌ها</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in _items)
+                    {
+                        <tr>
+                            <td>@item.Title</td>
+                            <td>
+                                @foreach (var tag in item.Tags)
+                                {
+                                    <span class="badge text-bg-primary">@tag.Key</span>
+                                }
+                            </td>
+                            <td>
+                                <NavLink href=@PbiIdToLink(item.Id.ToString()) class="link-primary link-underline-opacity-0">نمایش</NavLink>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -96,7 +130,11 @@
     [Parameter] public string? OwnerKey { get; set; }
     [Parameter] public string? ProjectKey { get; set; }
 
+    [SupplyParameterFromQuery] public string[]? Include { get; set; }
+    [SupplyParameterFromQuery] public string[]? Exclude { get; set; }
+
     [SupplyParameterFromForm] private EditInputModel? EditInput { get; set; }
+    [SupplyParameterFromForm] private FilterFormModel? FilterModel { get; set; }
 
     private IReadOnlyCollection<QueryPBIs.Response.PBI> _items = [];
     private IReadOnlyCollection<QueryTagsOfProject.Response.Tag> _tags = [];
@@ -116,7 +154,10 @@
         if (username is null || username != OwnerKey)
             return;
 
-        QueryPBIs.Request request = new(OwnerKey, ProjectKey);
+        QueryPBIs.Request request = new(
+            OwnerKey,
+            ProjectKey,
+            new QueryPBIs.Request.FilterModel(Include?.ToImmutableArray(), Exclude?.ToImmutableArray()));
         var response = await Mediator.Send(request);
         response.Match(
             r => _items = r.PBIs,
@@ -184,12 +225,21 @@
         NavigationManager.NavigateTo(NavigationManager.Uri);
     }
 
-    private string PbiIdToLink(string id) => $"/_/{OwnerKey}/{ProjectKey}/backlog/edit/{id}";
+    private string PbiIdToLink(string id) => $"/_/{OwnerKey}/{ProjectKey}/backlog/edit/{id}"
+        .Apply(a => Include is null or [] ? a : a + "?" + Include.Select(b => "Include=" + b).Aggregate((y, x) => x + "&" + y))
+        .Apply(a => Exclude is null or [] ? a : a + "?" + Exclude.Select(b => "Exclude=" + b).Aggregate((y, x) => x + "&" + y))
+        ;
 
     class EditInputModel
     {
         public string? Title { get; set; }
         public string? Description { get; set; }
         public string[]? Tags { get; set; } = [];
+    }
+
+    class FilterFormModel
+    {
+        public string[]? Include { get; set; }
+        public string[]? Exclude { get; set; }
     }
 }

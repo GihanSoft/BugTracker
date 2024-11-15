@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq.Expressions;
 using System.Text;
 
 using BugTracker.Main.Common.Security;
@@ -15,7 +16,15 @@ namespace BugTracker.Main.Features.Backlog.Mediator;
 [Mapper]
 internal static partial class QueryPBIs
 {
-    public record Request(string ProjectOwner, string ProjectKey) : IRequest<Either<Error, Response>>;
+    public record Request(
+        string ProjectOwner,
+        string ProjectKey,
+        Request.FilterModel Filter)
+        : IRequest<Either<Error, Response>>
+    {
+        public sealed record FilterModel(ImmutableArray<string>? Include, ImmutableArray<string>? Exclude);
+    }
+
     public record Response(IReadOnlyCollection<Response.PBI> PBIs)
     {
         public record PBI(ProductBacklogItemId Id, string Title, IReadOnlyList<PBI.Tag> Tags)
@@ -36,6 +45,8 @@ internal static partial class QueryPBIs
         {
             var baseQuery = _db.ProductBacklogItems.Where(x => x.Project.OwnerKey == _currentUserInfo.UserKey);
             var pbiList = await baseQuery.Where(x => x.Project.Key == request.ProjectKey)
+                .Apply(q => request.Filter.Include is null or [] ? q : q.Where(b => request.Filter.Include.Intersect(b.Tags.Select(t => t.Key)).Any()))
+                .Apply(q => request.Filter.Exclude is null or [] ? q : q.Where(b => !request.Filter.Exclude.Intersect(b.Tags.Select(t => t.Key)).Any()))
                 .OrderByDescending(x => x.CreationMoment)
                 .Select(x => new Response.PBI(x.Id, x.Title, x.Tags.Select(y => new Response.PBI.Tag(y.Key)).ToImmutableList()))
                 .ToListAsync(cancellationToken);
