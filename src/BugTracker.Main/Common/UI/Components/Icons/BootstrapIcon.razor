@@ -1,4 +1,4 @@
-﻿<svg class="bi" height="@FinalSize" width="@FinalSize" fill="currentColor">
+<svg class="bi" height="@FinalSize" width="@FinalSize" fill="currentColor">
     <use xlink:href="@KindKey" />
 </svg>
 
@@ -11,7 +11,9 @@
     private string KindKey => "lib/bootstrap-icons/bootstrap-icons.svg#" + Kind switch
     {
         BootstrapIconKind.Gear => "gear",
+        BootstrapIconKind.Moon_Stars_Fill => "moon-stars-fill",
         BootstrapIconKind.People => "people",
+        BootstrapIconKind.Sun_Fill => "sun-fill",
         BootstrapIconKind.Trash => "trash",
         _ => "",
     };

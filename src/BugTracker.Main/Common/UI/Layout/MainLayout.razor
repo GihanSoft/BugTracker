@@ -1,4 +1,4 @@
-﻿@using BugTracker.Main.Common.UI.Layout.MainLayoutParts
+@using BugTracker.Main.Common.UI.Layout.MainLayoutParts
 
 @inherits LayoutComponentBase
 
@@ -6,6 +6,9 @@
 <div id="page-container" class="flex-grow-1 container d-flex flex-column py-2">
     @Body
 </div>
+<button id="dark-mode-toggle" class="btn rounded-circle position-fixed end-0 bottom-0 p-3 m-2 shadow bg-body">
+    <BootstrapIcon Kind="BootstrapIconKind.Sun_Fill" />
+</button>
 <Footer />
 
 <div id="blazor-error-ui">
