@@ -1,4 +1,4 @@
-﻿@page "/_/{OwnerKey}/{ProjectKey}/backlog/create-item"
+@page "/_/{OwnerKey}/{ProjectKey}/backlog/create-item"
 
 @using BugTracker.Main.Features.Backlog.Data
 @using Microsoft.EntityFrameworkCore
@@ -75,7 +75,7 @@
 
     private async Task OnValidSubmit(EditContext editContext)
     {
-        var tags = Input.Tags.Select(x => new CreatePBI.Request.Tag(x)).ToList().AsReadOnly();
+        var tags = Input.Tags?.Select(x => new CreatePBI.Request.Tag(x)).ToList().AsReadOnly() as IReadOnlyCollection<CreatePBI.Request.Tag> ?? [];
         CreatePBI.Request request = new(
             OwnerKey ?? "",
             ProjectKey ?? "",
