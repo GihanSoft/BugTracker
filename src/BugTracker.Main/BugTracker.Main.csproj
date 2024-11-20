@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\lib\GihanSoft.Framework\src\GihanSoft.Framework.Core\GihanSoft.Framework.Core.csproj" />
     <ProjectReference Include="..\..\lib\GihanSoft.Framework\src\GihanSoft.Framework.Web\GihanSoft.Framework.Web.csproj" />
+    <ProjectReference Include="..\BugTracker.ServiceDefaults\BugTracker.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

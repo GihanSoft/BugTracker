@@ -8,6 +8,8 @@ using GihanSoft.Framework.Web.Bootstrap.Initialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.Configure<ForwardedHeadersOptions>(builder.Configuration.GetSection(nameof(ForwardedHeadersOptions)));
 
 builder.Services.AddRazorComponents();
@@ -33,6 +35,8 @@ _ = app
     .UseAntiforgery()
     .UseEndpoints(_ => { })
     ;
+
+app.MapDefaultEndpoints();
 
 app.MapRazorComponents<App>();
 

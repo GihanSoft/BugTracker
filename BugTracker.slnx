@@ -10,17 +10,16 @@
   </Folder>
   <Folder Name="/test/" />
   <Folder Name="/src/">
+    <Project Path="src/BugTracker.AppHost/BugTracker.AppHost.csproj" Id="de28f6e1-c3f7-4051-92c1-0399130792b1" />
+    <Project Path="src/BugTracker.ServiceDefaults/BugTracker.ServiceDefaults.csproj" Id="f5da600c-6e65-4486-a4ae-8daf53722c61" />
     <Project Path="src\BugTracker.Main\BugTracker.Main.csproj" />
   </Folder>
   <Folder Name="/lib/">
     <Project Path="lib\GihanSoft.Framework\src\GihanSoft.Framework.Core\GihanSoft.Framework.Core.csproj" />
     <Project Path="lib\GihanSoft.Framework\src\GihanSoft.Framework.Web\GihanSoft.Framework.Web.csproj" />
   </Folder>
-  <Folder Name="/.github/workflows/">
+  <Folder Name="/.github/workflows/" Id="e7a3c856-6834-d657-f2f0-05592df2dde9">
     <File Path=".github\workflows\liara.yml" />
   </Folder>
   <Folder Name="/.github/" />
-  <Properties Name="Visual Studio">
-    <Property Name="OpenWith" Value="17" />
-  </Properties>
 </Solution>
