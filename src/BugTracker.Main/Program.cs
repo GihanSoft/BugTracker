@@ -28,7 +28,6 @@ _ = app
     .If(!isDevelopment, a => a.UseHsts())
     .UseHttpsRedirection()
     .UseStatusCodePagesWithReExecute("/{0}")
-    .UseStaticFiles()
     .UseRouting()
     .UseAuthentication()
     .UseAuthorization()
@@ -39,6 +38,7 @@ _ = app
 app.MapDefaultEndpoints();
 
 app.MapRazorComponents<App>();
+app.MapStaticAssets();
 
 await app.RunInitializersAsync();
 
