@@ -11,6 +11,7 @@
   <Folder Name="/test/" />
   <Folder Name="/src/">
     <Project Path="src/BugTracker.AppHost/BugTracker.AppHost.csproj" Id="de28f6e1-c3f7-4051-92c1-0399130792b1" />
+    <Project Path="src/BugTracker.MigrationsApplier/BugTracker.MigrationsApplier.csproj" Id="505014bd-6268-4698-80ad-8732db9edd04" />
     <Project Path="src/BugTracker.ServiceDefaults/BugTracker.ServiceDefaults.csproj" Id="f5da600c-6e65-4486-a4ae-8daf53722c61" />
     <Project Path="src\BugTracker.Main\BugTracker.Main.csproj" />
   </Folder>
