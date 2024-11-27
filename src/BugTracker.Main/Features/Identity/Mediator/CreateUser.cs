@@ -13,6 +13,7 @@ internal static partial class CreateUser
         string UserName,
         string Password,
         string Email,
+        string? DisplayName,
         string? Avatar) : IRequest<Either<Error, IdentityResult>>;
 
     public class Handler(
@@ -29,6 +30,7 @@ internal static partial class CreateUser
             _ = await _userManager.SetEmailAsync(user, request.Email);
 
             user.Avatar = request.Avatar;
+            user.DisplayName = request.DisplayName;
             var result = await _userManager.CreateAsync(user, request.Password);
             return result;
         }

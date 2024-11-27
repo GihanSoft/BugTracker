@@ -18,34 +18,40 @@
                       enctype="multipart/form-data"
                       OnValidSubmit="OnValidSubmit"
                       class="d-flex flex-column gap-2">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
 
                 <div>
-                    <InputFile name="InputModel.Avatar" class="form-control" />
+                    <InputFile name="InputModel.Avatar" class="form-control"/>
                 </div>
                 <div>
                     <label>
                         نام کاربری
-                        <InputText @bind-Value="InputModel!.UserName" required class="form-control" />
+                        <InputText @bind-Value="InputModel!.UserName" required class="form-control"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         گذرواژه
-                        <InputText type="password" @bind-Value="InputModel.Password" required class="form-control" />
+                        <InputText type="password" @bind-Value="InputModel.Password" required class="form-control"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         تایید گذرواژه
-                        <InputText type="password" @bind-Value="InputModel.PasswordConfirmation" required class="form-control" />
+                        <InputText type="password" @bind-Value="InputModel.PasswordConfirmation" required class="form-control"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         رایانامه
-                        <InputText @bind-Value="InputModel.Email" type="email" autocomplete="email" class="form-control" />
+                        <InputText @bind-Value="InputModel.Email" type="email" autocomplete="email" class="form-control"/>
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        نام نمایشی
+                        <InputText @bind-Value="InputModel!.DisplayName" class="form-control"/>
                     </label>
                 </div>
                 <button type="submit" class="btn btn-primary">ذخیره</button>
@@ -55,19 +61,18 @@
 </div>
 
 @code {
-    [SupplyParameterFromForm]
-    private SignInInputModel? InputModel { get; set; }
+    [SupplyParameterFromForm] private CreateUserInputModel? InputModel { get; set; }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        InputModel ??= new();
+        InputModel ??= new CreateUserInputModel();
     }
 
     private static async Task<string?> GetFileAsUrl(IFormFile formFile)
     {
         await using MemoryStream memoryStream = new();
-        await (formFile.CopyToAsync(memoryStream) ?? Task.CompletedTask);
+        await formFile.CopyToAsync(memoryStream);
         var avatarBin = memoryStream.ToArray();
         var avatarBase64 = Convert.ToBase64String(avatarBin);
         var avatarUrl = $"data:{formFile.ContentType};base64," + avatarBase64;
@@ -84,9 +89,10 @@
             InputModel!.UserName!,
             InputModel.Password!,
             InputModel.Email!,
+            InputModel.DisplayName,
             avatarUrl);
         var response = await Mediator.Send(request);
-        IdentityResult result = response.IfLeft(error => throw error.ToException());
+        var result = response.IfLeft(error => throw error.ToException());
 
         if (result.Succeeded)
         {
@@ -99,16 +105,14 @@
         editContext.NotifyValidationStateChanged();
     }
 
-    class SignInInputModel()
+    class CreateUserInputModel
     {
         public IFormFile? Avatar { get; set; }
-        [Required]
-        public string? UserName { get; set; }
-        [Required]
-        public string? Password { get; set; }
-        [Required, Compare(nameof(Password))]
-        public string? PasswordConfirmation { get; set; }
-        [Required, EmailAddress]
-        public string? Email { get; set; }
+        [Required] public string? UserName { get; set; }
+        [Required] public string? Password { get; set; }
+        [Required, Compare(nameof(Password))] public string? PasswordConfirmation { get; set; }
+        [Required, EmailAddress] public string? Email { get; set; }
+        public string? DisplayName { get; set; }
     }
+
 }
