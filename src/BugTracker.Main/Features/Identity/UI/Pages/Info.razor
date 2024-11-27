@@ -1,7 +1,4 @@
-﻿@page "/Identity/Info"
-
-@using System.Security.Claims
-@using BugTracker.Main.Features.Identity
+@page "/Identity/Info"
 
 @attribute [Authorize]
 
@@ -9,10 +6,24 @@
 
 @if (_userInfo is not null)
 {
-    <div>
-        <Avatar AvatarUrl="@_userInfo.Avatar" AvatarAlt="@_userInfo.UserName" alt="avatar" />
+    <EditForm Enhance
+              FormName="UpdateInfo"
+              Model="InputModel"
+              enctype="multipart/form-data"
+              OnValidSubmit="OnValidSubmit"
+              class="d-flex flex-column gap-2">
         <div>
-            <span>نام نمایشی:</span> <span>@_userInfo.DisplayName</span>
+            <button type="submit" class="btn btn-primary">ذخیره</button>
+        </div>
+        <Avatar AvatarUrl="@_userInfo.Avatar" AvatarAlt="@_userInfo.UserName" alt="avatar"/>
+        <div>
+            <InputFile name="InputModel.Avatar" class="form-control"/>
+        </div>
+        <div>
+            <label>
+                نام نمایشی
+                <InputText @bind-Value="InputModel!.DisplayName" class="form-control"/>
+            </label>
         </div>
         <div>
             <span>نام کاربری:</span> <span>@_userInfo.UserName</span>
@@ -25,24 +36,24 @@
             <span>موبایل:</span> <span>@_userInfo.PhoneNumber</span>
             <span>@(_userInfo.PhoneNumberConfirmed ? "✔" : "❌")</span>
         </div>
-    </div>
+    </EditForm>
 
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
-                <tr>
-                    <th>type</th>
-                    <th>value</th>
-                </tr>
+            <tr>
+                <th>type</th>
+                <th>value</th>
+            </tr>
             </thead>
             <tbody>
-                @foreach (var item in _userInfo.Claims)
-                {
-                    <tr>
-                        <td>@item.Type</td>
-                        <td>@item.Value</td>
-                    </tr>
-                }
+            @foreach (var item in _userInfo.Claims)
+            {
+                <tr>
+                    <td>@item.Type</td>
+                    <td>@item.Value</td>
+                </tr>
+            }
             </tbody>
             <caption class="caption-top">claims</caption>
         </table>
@@ -52,13 +63,45 @@
 @code {
     private ReadCurrentUserInfo.Response? _userInfo;
 
+    [SupplyParameterFromForm] private UpdateInfoInputModel? InputModel { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         ReadCurrentUserInfo.Request request = new();
         var response = await Mediator.Send(request);
-        response.Match(
-            r => _userInfo = r,
+        _userInfo = response.Match(
+            r => r,
             error => throw error.ToException()
         );
+        InputModel ??= new UpdateInfoInputModel() { DisplayName = _userInfo.DisplayName };
+    }
+
+    private static async Task<string?> GetFileAsUrl(IFormFile formFile)
+    {
+        await using MemoryStream memoryStream = new();
+        await formFile.CopyToAsync(memoryStream);
+        var avatarBin = memoryStream.ToArray();
+        var avatarBase64 = Convert.ToBase64String(avatarBin);
+        var avatarUrl = $"data:{formFile.ContentType};base64," + avatarBase64;
+        return avatarUrl;
+    }
+
+    private async Task OnValidSubmit(EditContext editContext)
+    {
+        var avatarUrl = InputModel?.Avatar is not null
+            ? await GetFileAsUrl(InputModel.Avatar)
+            : null;
+
+        UpdateCurrentUserInfo.Request request = new(
+            avatarUrl,
+            InputModel?.DisplayName);
+        var response = await Mediator.Send(request);
+        _ = response.IfLeft(error => throw error.ToException());
+    }
+
+    class UpdateInfoInputModel
+    {
+        public IFormFile? Avatar { get; set; }
+        public string? DisplayName { get; set; }
     }
 }
