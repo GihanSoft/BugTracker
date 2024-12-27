@@ -1,4 +1,4 @@
-﻿@page "/Identity/Info"
+@page "/Identity/Info"
 
 @using System.Security.Claims
 @using BugTracker.Main.Features.Identity
@@ -6,6 +6,8 @@
 @attribute [Authorize]
 
 @inject MediatR.IMediator Mediator
+
+<PageTitle>اطلاعات حساب کاربری</PageTitle>
 
 @if (_userInfo is not null)
 {

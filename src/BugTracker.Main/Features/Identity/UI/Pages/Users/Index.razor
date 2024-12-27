@@ -1,4 +1,4 @@
-﻿@using BugTracker.Main.Features.Identity
+@using BugTracker.Main.Features.Identity
 @using Microsoft.AspNetCore.Identity
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.EntityFrameworkCore
@@ -8,6 +8,8 @@
 @inject MediatR.IMediator Mediator
 
 @attribute [Authorize("sarvar")]
+
+<PageTitle>کاربران</PageTitle>
 
 <div>
     <a href="Identity/Users/Create" data-enhance class="btn btn-primary">جدید</a>

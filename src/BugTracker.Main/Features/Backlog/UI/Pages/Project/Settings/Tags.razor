@@ -1,9 +1,11 @@
-﻿@page "/_/{OwnerKey}/{ProjectKey}/settings/tags"
+@page "/_/{OwnerKey}/{ProjectKey}/settings/tags"
 
 @using System.ComponentModel.DataAnnotations
 
 @inject MediatR.IMediator Mediator
 @inject NavigationManager NavigationManager
+
+<PageTitle>برچسب‌ها</PageTitle>
 
 <div class="flex-grow-1">
     <EditForm Enhance FormName="project-settings-tag-create" Model="FormModel" OnValidSubmit="Create_OnValidSubmit">

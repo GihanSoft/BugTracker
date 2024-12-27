@@ -1,10 +1,12 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @using System.ComponentModel.DataAnnotations
 
 @page "/Identity/SignIn"
 
 @inject MediatR.IMediator Mediator
 @inject NavigationManager NavigationManager
+
+<PageTitle>ورود به حساب کاربری</PageTitle>
 
 <div class="flex-grow-1 d-flex flex-column justify-content-center align-items-center">
     <div class="card">
