@@ -1,4 +1,4 @@
-namespace BugTracker.Main.Common.UI.Components.Icons;
+﻿namespace BugTracker.Main.Common.UI.Components.Icons;
 
 public enum BootstrapIconKind
 {

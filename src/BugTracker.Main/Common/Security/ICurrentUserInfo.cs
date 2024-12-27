@@ -1,4 +1,4 @@
-namespace BugTracker.Main.Common.Security;
+﻿namespace BugTracker.Main.Common.Security;
 
 internal interface ICurrentUserInfo
 {

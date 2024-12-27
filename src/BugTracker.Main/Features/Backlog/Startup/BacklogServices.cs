@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore;
+﻿using BugTracker.Main.Common.UI.Menu;
 using BugTracker.Main.Features.Backlog.Data;
-using EntityFramework.Exceptions.PostgreSQL;
 using BugTracker.Main.Features.Backlog.UI;
-using BugTracker.Main.Common.UI.Menu;
+
+using EntityFramework.Exceptions.PostgreSQL;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BugTracker.Main.Features.Backlog.Startup;
 

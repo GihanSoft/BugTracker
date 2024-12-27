@@ -1,4 +1,4 @@
-using BugTracker.Main;
+﻿using BugTracker.Main;
 using BugTracker.Main.Common.UI;
 using BugTracker.Main.Features.Backlog.Startup;
 using BugTracker.Main.Features.Identity.Startup;
