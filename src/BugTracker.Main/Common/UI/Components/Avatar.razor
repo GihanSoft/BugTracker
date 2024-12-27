@@ -1,4 +1,4 @@
-﻿@using System.Buffers
+@using System.Buffers
 @using System.Text
 @if (AvatarUrl is not null)
 {
@@ -6,7 +6,7 @@
 }
 else
 {
-    <span class="avatar">
+    <span class="avatar" style=@GetBgStyle()>
         @GetLetterAvatarString(AvatarAlt)
     </span>
 }
@@ -34,4 +34,16 @@ else
     [Parameter] public string? AvatarUrl { get; set; }
     [Parameter] public string? AvatarAlt { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private static string GetBgStyle()
+    {
+        var bgColor = BackgroundColors.Dequeue();
+        BackgroundColors.Enqueue(bgColor);
+        return $"background-color: {bgColor}";
+    }
+
+    private static readonly Queue<string> BackgroundColors = new Queue<string>([
+        "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#16a085", "#27ae60", "#2980b9", "#8e44ad",
+    "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#7f8c8d"
+    ]);
 }
