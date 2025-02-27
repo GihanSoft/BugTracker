@@ -1,9 +1,0 @@
-{
-  "port": 80,
-  "platform": "dotnet",
-  "app": "BugTracker",
-  "dotnet": {
-    "version": "8.0",
-    "csprojectFile": "src/BugTracker.Main/BugTracker.Main.csproj"
-  }
-}
