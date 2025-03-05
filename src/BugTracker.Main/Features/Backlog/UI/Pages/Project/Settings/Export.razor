@@ -1,0 +1,10 @@
+@page "/_/{OwnerKey}/{ProjectKey}/settings/export"
+
+<h3>Import/Export</h3>
+
+<a href="@($"/api/v1/_/{OwnerKey}/{ProjectKey}/export")" class="btn btn-info">Export</a>
+
+@code {
+    [Parameter] public string? OwnerKey { get; set; }
+    [Parameter] public string? ProjectKey { get; set; }
+}

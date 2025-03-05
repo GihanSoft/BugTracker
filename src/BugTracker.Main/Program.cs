@@ -40,6 +40,8 @@ app.MapDefaultEndpoints();
 app.MapRazorComponents<App>();
 app.MapStaticAssets();
 
+app.MapBacklogEndpoints();
+
 await app.RunInitializersAsync();
 
 app.Run();

@@ -26,8 +26,8 @@ internal sealed class Project
 
     public DateTime CreationMoment { get; private set; }
 
-    public ICollection<ProductBacklogItem> BacklogItems { get; } = [];
-    public ICollection<Tag> Tags { get; } = [];
+    public ICollection<ProductBacklogItem> BacklogItems { get; init; } = [];
+    public ICollection<Tag> Tags { get; init; } = [];
 }
 
 internal class ProjectConfig : IEntityTypeConfiguration<Project>

@@ -1,5 +1,6 @@
 ﻿using BugTracker.Main.Common.UI.Menu;
 using BugTracker.Main.Features.Backlog.Data;
+using BugTracker.Main.Features.Backlog.Endpoints;
 using BugTracker.Main.Features.Backlog.UI;
 
 using EntityFramework.Exceptions.PostgreSQL;
@@ -51,5 +52,13 @@ internal static class BacklogServices
             }
         });
         return default;
+    }
+
+    public static TRouteBuilder MapBacklogEndpoints<TRouteBuilder>(this TRouteBuilder app)
+        where TRouteBuilder : IEndpointRouteBuilder
+    {
+        app.MapExportProjectEndpoints();
+        app.MapImportProjectEndpoints();
+        return app;
     }
 }

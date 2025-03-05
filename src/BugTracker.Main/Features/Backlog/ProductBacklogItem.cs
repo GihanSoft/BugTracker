@@ -7,7 +7,7 @@ using StronglyTypedIds;
 
 namespace BugTracker.Main.Features.Backlog;
 
-[StronglyTypedId("gs-long", "gs-long-ef")]
+[StronglyTypedId("gs-long", "gs-long-parsable", "gs-long-ef")]
 internal readonly partial struct ProductBacklogItemId { }
 
 internal sealed record ProductBacklogItem

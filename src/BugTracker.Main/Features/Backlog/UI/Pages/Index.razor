@@ -1,4 +1,4 @@
-﻿@page "/_"
+@page "/_"
 @page "/_/{OwnerKey}"
 
 @using BugTracker.Main.Features.Backlog
@@ -15,6 +15,7 @@
 
     <div>
         <NavLink href=@($"_/{OwnerKey}/create-project") class="btn btn-primary">ایجاد پروژه جدید</NavLink>
+        <button class="btn btn-info" onclick="@($"askForImportFile('{OwnerKey}')")">Import</button>
     </div>
 
     @if (projects is null)

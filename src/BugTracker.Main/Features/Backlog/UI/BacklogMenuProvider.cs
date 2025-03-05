@@ -65,7 +65,12 @@ internal partial class BacklogMenuProvider : IMenuProvider
                             "برچسب‌ها",
                             null,
                             0,
-                            $"/_/{_currentUserInfo.UserKey}/{projectKey}/settings/tags")
+                            $"/_/{_currentUserInfo.UserKey}/{projectKey}/settings/tags"),
+                        new LeafMenuItemData(
+                            "export",
+                            null,
+                            0,
+                            $"/_/{_currentUserInfo.UserKey}/{projectKey}/settings/export"),
                     ]),
             ];
         }

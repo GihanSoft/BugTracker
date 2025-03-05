@@ -1,4 +1,3 @@
-
 !function () {
 
   /**
@@ -101,3 +100,73 @@
   mdui.loadLocale((locale) => import(`/lib/mdui/locales/${locale}.min.js`));
   mdui.setLocale('fa-ir');
 }()
+
+/**
+ *
+ * @param {string} ownerKey
+ */
+function askForImportFile(ownerKey) {
+  // Create an input element dynamically
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+
+  // Add an event listener to handle file selection
+  fileInput.addEventListener('change', async (event) => {
+    const file = event.target.files[0]; // Get the selected file
+    if (!file) {
+      console.log('No file selected.');
+      return;
+    }
+
+    console.log('File selected:', file.name);
+
+    // Define the upload endpoint
+    const uploadUrl = `/api/v1/_/${ownerKey}/import`;
+    const antiForgeryName = "__RequestVerificationToken";
+    const antiForgeryInput = document.querySelector(`input[name=${antiForgeryName}]`);
+    const antiForgeryToken = antiForgeryInput.value;
+    // Create a FormData object to send the file
+    const formData = new FormData();
+    formData.append('file', file); // 'file' is the key expected by the server
+    formData.append(antiForgeryName, antiForgeryToken);
+    try {
+      // Create a new XMLHttpRequest for progress tracking
+      const xhr = new XMLHttpRequest();
+
+      // Set up the request
+      xhr.open('POST', uploadUrl, true);
+
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = (event.loaded / event.total) * 100;
+          console.log(`Upload progress: ${percentComplete.toFixed(2)}%`);
+        }
+      });
+
+      // Handle the response
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          console.log('Upload successful:', xhr.responseText);
+          Blazor.navigateTo('/', 0, 1);
+
+        } else {
+          console.error('Upload failed:', xhr.statusText);
+        }
+      });
+
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        console.error('Upload failed due to a network error.');
+      });
+
+      // Send the request with the FormData
+      xhr.send(formData);
+    } catch (error) {
+      console.error('Error during upload:', error);
+    }
+  });
+
+  // Trigger the file selection dialog
+  fileInput.click();
+}
