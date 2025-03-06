@@ -18,9 +18,7 @@ internal static class ImportProjectEndpoint
                 await using var disposable = inputStream.ConfigureAwait(false);
                 Mediator.Project.Import.Request request = new(ownerKey, inputStream);
                 var response = await mediator.Send(request, ct);
-                return response.Match<IResult>(
-                    _ => TypedResults.Ok(),
-                    err => throw err.ToException());
+                return response;
             });
 
         return app;

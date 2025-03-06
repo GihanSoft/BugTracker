@@ -2,7 +2,6 @@
 
 using BugTracker.Main.Common.Security;
 using BugTracker.Main.Features.Backlog.Data;
-using BugTracker.Main.Features.Backlog.Endpoints;
 
 using MediatR;
 
@@ -12,17 +11,17 @@ namespace BugTracker.Main.Features.Backlog.Mediator.Project;
 
 internal static class ExportProject
 {
-    public record Request(string OwnerKey, string ProjectKey) : IRequest<Either<Error, string>>;
+    public record Request(string OwnerKey, string ProjectKey) : IRequest<IResult>;
 
     public class Handler(
         ICurrentUserInfo _currentUserInfo,
         BacklogDbContext db)
-        : IRequestHandler<Request, Either<Error, string>>
+        : IRequestHandler<Request, IResult>
     {
         private readonly ICurrentUserInfo _currentUserInfo = _currentUserInfo;
         private readonly BacklogDbContext _db = db;
 
-        public async Task<Either<Error, string>> Handle(Request request, CancellationToken ct)
+        public async Task<IResult> Handle(Request request, CancellationToken ct)
         {
             var baseQuery = _db.Projects.Where(x => x.OwnerKey == _currentUserInfo.UserKey);
             var portableProject = await baseQuery
@@ -43,11 +42,8 @@ internal static class ExportProject
                         b.Tags.Select(c => c.Key).ToList()
                     )).ToList()
                 )).FirstOrDefaultAsync(ct);
-            var tempFilePath = Path.GetTempFileName();
-            var file = File.Open(tempFilePath, FileMode.Open);
-            await using var dis = file.ConfigureAwait(false);
-            await JsonSerializer.SerializeAsync(file, portableProject, cancellationToken: ct).ConfigureAwait(false);
-            return tempFilePath;
+            var bin = JsonSerializer.SerializeToUtf8Bytes(portableProject);
+            return TypedResults.File(bin, "application/json", request.ProjectKey + ".json");
         }
     }
 }

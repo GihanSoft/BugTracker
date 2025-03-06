@@ -9,27 +9,27 @@ namespace BugTracker.Main.Features.Backlog.Mediator.Project;
 
 internal static class Import
 {
-    public record Request(string OwnerKey, Stream Stream) : IRequest<Either<Error, LanguageExt.Unit>>;
+    public record Request(string OwnerKey, Stream Stream) : IRequest<IResult>;
 
     public class Handler(
         ICurrentUserInfo _currentUserInfo,
         BacklogDbContext db)
-        : IRequestHandler<Request, Either<Error, LanguageExt.Unit>>
+        : IRequestHandler<Request, IResult>
     {
         private readonly ICurrentUserInfo _currentUserInfo = _currentUserInfo;
         private readonly BacklogDbContext _db = db;
 
-        public async Task<Either<Error, LanguageExt.Unit>> Handle(Request request, CancellationToken ct)
+        public async Task<IResult> Handle(Request request, CancellationToken ct)
         {
             if (request.OwnerKey != _currentUserInfo.UserKey)
             {
-                return Error.New("access denied");
+                return TypedResults.Forbid();
             }
 
             var portableProject = await ReadJsonAsync(request.Stream, ct);
             if (portableProject is null)
             {
-                return Error.New("bad request");
+                return TypedResults.BadRequest();
             }
 
             var tags = portableProject.Tags.Select(a => new Backlog.Tag(a.Key)).ToDictionary(a => a.Key);
@@ -47,7 +47,7 @@ internal static class Import
             await _db.Projects.AddAsync(project, ct);
             await _db.SaveChangesAsync(ct);
 
-            return unit;
+            return TypedResults.Ok();
         }
 
         private static async ValueTask<PortableProject?> ReadJsonAsync(Stream stream, CancellationToken ct)

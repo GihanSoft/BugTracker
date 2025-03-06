@@ -16,9 +16,7 @@ internal static class ExportProjectEndpoint
             {
                 Mediator.Project.ExportProject.Request req = new(ownerKey, projectKey);
                 var response = await mediator.Send(req, ct);
-                return response.Match<IResult>(
-                    path => TypedResults.PhysicalFile(path, "application/json", projectKey + ".json", enableRangeProcessing: true),
-                    err => TypedResults.InternalServerError());
+                return response;
             });
 
         return app;
