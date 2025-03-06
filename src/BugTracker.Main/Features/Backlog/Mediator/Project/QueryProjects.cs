@@ -37,5 +37,7 @@ internal static partial class QueryProjects
         }
     }
 
+#pragma warning disable RMG020 // Source member is not mapped to any target member
     private static partial IQueryable<Response.Project> Map(this IQueryable<Backlog.Project> project);
+#pragma warning restore RMG020 // Source member is not mapped to any target member
 }

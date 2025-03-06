@@ -15,7 +15,7 @@
 <div class="container flex-grow-1 d-flex flex-column gap-2">
     <div class="btn-group">
         <NavLink href=@($"/_/{OwnerKey}/{ProjectKey}/backlog/create-item") class="btn btn-outline-primary w-25"> جدید </NavLink>
-        @if (_currentItem.IsSome)
+        @if (_currentItem.IsSome && Id is not null)
         {
             <form data-enhance
                   href=@PbiIdToLink(Id)
@@ -42,7 +42,7 @@
                 <div>
                     <label class="form-label w-100">
                         عنوان:
-                        <InputText @bind-Value="EditInput.Title" required class="form-control w-100" />
+                        <InputText @bind-Value="EditInput!.Title" required class="form-control w-100" />
                     </label>
                 </div>
                 <div>

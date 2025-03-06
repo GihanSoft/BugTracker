@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -37,7 +37,7 @@ public sealed class Worker : BackgroundService
             {
                 await EnsureDatabaseAsync(dbContext, stoppingToken);
                 await RunMigrationAsync(dbContext, stoppingToken);
-                await SeedDataAsync(dbContext, stoppingToken);
+                //await SeedDataAsync(dbContext, stoppingToken);
             }
             catch (Exception ex)
             {
@@ -77,9 +77,9 @@ public sealed class Worker : BackgroundService
         });
     }
 
+    /* // sample
     private async ValueTask SeedDataAsync(DbContext dbContext, CancellationToken stoppingToken)
     {
-        /* // sample
         SupportTicket firstTicket = new()
         {
             Title = "Test Ticket",
@@ -96,6 +96,6 @@ public sealed class Worker : BackgroundService
             await dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
         });
-        */
     }
+    */
 }
