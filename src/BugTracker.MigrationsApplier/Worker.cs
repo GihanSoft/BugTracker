@@ -41,7 +41,7 @@ public sealed class Worker : BackgroundService
             }
             catch (Exception ex)
             {
-                activity?.RecordException(ex);
+                activity?.AddException(ex);
                 throw;
             }
         }
@@ -71,9 +71,9 @@ public sealed class Worker : BackgroundService
         await strategy.ExecuteAsync(async () =>
         {
             // Run migration in a transaction to avoid partial migration if it fails.
-            await using var transaction = await dbContext.Database.BeginTransactionAsync(stoppingToken);
+            //await using var transaction = await dbContext.Database.BeginTransactionAsync(stoppingToken);
             await dbContext.Database.MigrateAsync(stoppingToken);
-            await transaction.CommitAsync(stoppingToken);
+            //await transaction.CommitAsync(stoppingToken);
         });
     }
 
