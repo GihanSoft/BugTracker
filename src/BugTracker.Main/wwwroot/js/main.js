@@ -52,6 +52,7 @@
 
     return;
   }
+
   const toggleColorMode = () => {
     const theme = localStorage.getItem('theme');
     const preferedColor = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -73,6 +74,7 @@
     localStorage.removeItem('theme');
     updateColorMode();
   }
+
   const toggleButton = document.getElementById('dark-mode-toggle');
   toggleButton.addEventListener('click', toggleColorMode);
 
@@ -99,6 +101,34 @@
 
   mdui.loadLocale((locale) => import(`/lib/mdui/locales/${locale}.min.js`));
   mdui.setLocale('fa-ir');
+
+  document.querySelectorAll(".show-password-btn")
+    .forEach(a => {
+      a.addEventListener("click", () => {
+
+        /** @type {"password" | "text"} */
+        let oldMode;
+
+        if (a.passwordElement) {
+          oldMode = a.passwordElement.getAttribute("type");
+        }
+        else {
+          for (var i = 0; i < a.parentElement.children.length; i++) {
+            const child = a.parentElement.children[i];
+            if (child instanceof HTMLInputElement && child.getAttribute("type") == "password") {
+              oldMode = "password";
+              a.passwordElement = child;
+            }
+          }
+        }
+
+        a.passwordElement.setAttribute("type", oldMode === "password" ? "text" : "password");
+        const iconValue = oldMode === "password"
+          ? 'lib/bootstrap-icons/bootstrap-icons.svg#eye-slash-fill'
+          : 'lib/bootstrap-icons/bootstrap-icons.svg#eye-fill';
+        a.children[0].children[0].setAttribute("xlink:href", iconValue);
+      })
+    });
 }()
 
 /**

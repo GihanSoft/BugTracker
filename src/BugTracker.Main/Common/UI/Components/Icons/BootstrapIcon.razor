@@ -10,6 +10,8 @@
     private int FinalSize => CustomSize ?? ((int?)Size) ?? 24;
     private string KindKey => "lib/bootstrap-icons/bootstrap-icons.svg#" + Kind switch
     {
+        BootstrapIconKind.Eye_Fill => "eye-fill",
+        BootstrapIconKind.Eye_Slash_Fill => "eye-slash-fill",
         BootstrapIconKind.Gear => "gear",
         BootstrapIconKind.Moon_Stars_Fill => "moon-stars-fill",
         BootstrapIconKind.People => "people",

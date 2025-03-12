@@ -15,15 +15,20 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div>
-                    <label class="form-label">
+                    <label class="form-label w-100">
                         نام کاربری
                         <InputText @bind-Value="InputModel!.UserName" required class="form-control" />
                     </label>
                 </div>
                 <div>
-                    <label class="form-label">
+                    <label class="form-label w-100">
                         گذرواژه
-                        <InputText @bind-Value="InputModel!.Password" type="password" required class="form-control" />
+                        <div class="input-group">
+                            <InputText @bind-Value="InputModel!.Password" type="password" required class="form-control" />
+                            <button type="button" class="show-password-btn btn btn-outline-secondary">
+                                <BootstrapIcon Kind="BootstrapIconKind.Eye_Fill" />
+                            </button>
+                        </div>
                     </label>
                 </div>
                 <div>
